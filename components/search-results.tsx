@@ -12,26 +12,38 @@ import { ContentSkeleton } from "./content-skeleton"
 // Use ContentItem type from contentSlice to ensure compatibility
 import type { ContentItem } from "@/lib/slices/contentSlice"
 
+// Optional: define search state type
+interface SearchState {
+  query: string
+  results: ContentItem[]
+}
+
 interface UserPreferences {
   layout: "grid" | "list"
+}
+
+// Type for search query args with optional filters
+type SearchQueryArgs = {
+  query: string
+  filters?: { category?: string[] }
 }
 
 export function SearchResults() {
   const dispatch = useAppDispatch()
 
-  const { query, results } = useAppSelector((state: any) => state.search as { query: string; results: ContentItem[] })
+  const { query, results } = useAppSelector((state: any) => state.search as SearchState)
   const { preferences } = useAppSelector((state: any) => state.user as { preferences: UserPreferences })
 
   // Call RTK Query endpoint with optional filters
   const { data, isLoading, error } = useSearchContentQuery(
-    { query, filters: undefined }, // you can later pass filters like { category: ["technology"] }
+    { query } as SearchQueryArgs,
     { skip: !query.trim() }
   )
 
   // Update Redux results
   useEffect(() => {
     if (data) {
-      dispatch(setResults(data))
+      dispatch(setResults(data as ContentItem[]))
     }
   }, [data, dispatch])
 
@@ -94,7 +106,7 @@ export function SearchResults() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {results.map((item) => (
+          {results.map((item: ContentItem) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, scale: 0.9 }}
