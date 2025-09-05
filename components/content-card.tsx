@@ -27,7 +27,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
     dispatch(toggleFavorite(item.id))
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string) => {
     if (!dateString) return "Unknown date"
     const date = new Date(dateString)
     return date.toLocaleDateString("en-US", {
@@ -51,7 +51,6 @@ export function ContentCard({ item, className }: ContentCardProps) {
     }
   }
 
-  // Check if image domain is safe (configured in next.config.mjs)
   const isSafeDomain = (url: string) => {
     try {
       const hostname = new URL(url).hostname
@@ -70,10 +69,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
     }
   }
 
-  const imageUrl =
-    !imgError && item.image
-      ? item.image
-      : "/placeholder.svg"
+  const imageUrl = !imgError && item.image ? item.image : "/placeholder.svg"
 
   return (
     <motion.div
@@ -83,26 +79,24 @@ export function ContentCard({ item, className }: ContentCardProps) {
     >
       <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
         {/* Image */}
-        <div className="relative">
-          <div className="w-full h-48 overflow-hidden rounded-t-lg">
-            {isSafeDomain(imageUrl) ? (
-              <Image
-                src={imageUrl}
-                alt={item.title || "Content image"}
-                width={400}
-                height={200}
-                className="w-full h-full object-cover transition-transform hover:scale-105"
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <img
-                src={imageUrl}
-                alt={item.title || "Content image"}
-                className="w-full h-full object-cover transition-transform hover:scale-105"
-                onError={() => setImgError(true)}
-              />
-            )}
-          </div>
+        <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
+          {isSafeDomain(imageUrl) ? (
+            <Image
+              src={imageUrl}
+              alt={item.title || "Content image"}
+              width={400}
+              height={200}
+              className="w-full h-full object-cover transition-transform hover:scale-105"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <img
+              src={imageUrl}
+              alt={item.title || "Content image"}
+              className="w-full h-full object-cover transition-transform hover:scale-105"
+              onError={() => setImgError(true)}
+            />
+          )}
 
           {/* Type Badge */}
           <div className="absolute top-2 left-2">
