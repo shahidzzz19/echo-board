@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useCallback, useMemo } from "react"
+import React, { useEffect, useCallback, useMemo } from "react"
 import useSWRInfinite from "swr/infinite"
 import { motion } from "framer-motion"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
@@ -13,8 +13,9 @@ import {
 import { ContentSkeleton } from "./content-skeleton"
 import { DraggableContentCard } from "./draggable-content-card"
 import { useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll"
+import type { ContentItem } from "@/lib/slices/contentSlice"
 
-// Generic fetcher
+// Fetcher for SWR
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function ContentFeed() {
@@ -22,30 +23,24 @@ export function ContentFeed() {
   const { preferences } = useAppSelector((state) => state.user)
   const { items } = useAppSelector((state) => state.content)
 
-  // SWR infinite pagination key
-  const getKey = (pageIndex: number, previousPageData: any) => {
-    if (previousPageData && !previousPageData.length) return null // reached end
-    return `/api/trending?page=${pageIndex + 1}&categories=${preferences.categories.join(",")}`
+  // SWR key function
+  const getKey = (pageIndex: number, previousPageData: ContentItem[] | null) => {
+    if (previousPageData && previousPageData.length === 0) return null // end
+    const categories = preferences.categories.join(",")
+    return `/api/trending?page=${pageIndex + 1}&categories=${categories}`
   }
 
-  const {
-    data,
-    error,
-    isLoading,
-    size,
-    setSize,
-    isValidating,
-  } = useSWRInfinite(getKey, fetcher)
+  const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<ContentItem[]>(getKey, fetcher)
 
-  // Flatten + dedupe items by id
+  // Flatten + dedupe items
   const flatItems = useMemo(() => {
     if (!data) return []
-    const merged = ([] as any[]).concat(...data)
-    const unique = Array.from(new Map(merged.map(i => [i.id, i])).values())
+    const merged = ([] as ContentItem[]).concat(...data)
+    const unique = Array.from(new Map(merged.map((i) => [i.id, i])).values())
     return unique
   }, [data])
 
-  // Update Redux store when new data arrives
+  // Update Redux store when data changes
   useEffect(() => {
     if (flatItems.length > 0) {
       if (size === 1) {
@@ -56,7 +51,7 @@ export function ContentFeed() {
     }
   }, [flatItems, size, dispatch])
 
-  // Handle loading + error states
+  // Handle loading & errors
   useEffect(() => {
     dispatch(setLoading(isLoading || isValidating))
     if (error) dispatch(setError("Failed to load content"))
@@ -64,14 +59,12 @@ export function ContentFeed() {
 
   // Infinite scroll
   const loadMore = useCallback(() => {
-    if (!isLoading && !isValidating) {
-      setSize(size + 1)
-    }
+    if (!isLoading && !isValidating) setSize(size + 1)
   }, [isLoading, isValidating, size, setSize])
 
   const [lastElementRef] = useInfiniteScroll(loadMore, isLoading)
 
-  // Skeleton for first load
+  // Skeleton for initial load
   if (isLoading && size === 1) {
     return (
       <div className="space-y-6">
@@ -110,7 +103,7 @@ export function ContentFeed() {
       >
         {items.map((item, index) => (
           <div
-            key={item.id || `feed-item-${index}`}
+            key={item.id}
             ref={index === items.length - 1 ? lastElementRef : null}
           >
             <DraggableContentCard item={item} index={index} />

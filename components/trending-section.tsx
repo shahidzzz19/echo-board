@@ -2,21 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { PersonalizedFeed } from "./PersonalizedFeed"
-
-interface FeedItem {
-  id: string
-  title: string
-  description: string
-  url: string
-  image?: string | null
-  source?: string
-  category?: string
-  publishedAt?: string
-  trending?: boolean
-}
+import { ContentItem } from "@/lib/slices/contentSlice"
 
 export function TrendingSection() {
-  const [items, setItems] = useState<FeedItem[]>([])
+  const [items, setItems] = useState<ContentItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -24,10 +13,10 @@ export function TrendingSection() {
       try {
         const res = await fetch("/api/trending")
         if (!res.ok) throw new Error("Failed to fetch trending content")
-        const data: FeedItem[] = await res.json()
+        const data: ContentItem[] = await res.json()
         setItems(data.slice(0, 10)) // limit to 10 items
-      } catch (_err) {
-        console.error(_err)
+      } catch (err) {
+        console.error(err)
       } finally {
         setLoading(false)
       }
@@ -36,16 +25,26 @@ export function TrendingSection() {
   }, [])
 
   if (loading) {
-    return <p className="text-center text-gray-500">Loading trending content...</p>
+    return (
+      <p className="text-center text-gray-500">
+        Loading trending content...
+      </p>
+    )
   }
 
   if (!items.length) {
-    return <p className="text-center text-gray-500">No trending content available.</p>
+    return (
+      <p className="text-center text-gray-500">
+        No trending content available.
+      </p>
+    )
   }
 
   return (
     <section>
-      <h2 className="text-xl font-bold mb-4">🔥 Your Personalized Feed</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {"🔥 Your Personalized Feed"}
+      </h2>
       <PersonalizedFeed items={items} />
     </section>
   )
