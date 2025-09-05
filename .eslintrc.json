@@ -2,7 +2,6 @@
   "root": true,
   "extends": [
     "next/core-web-vitals",
-    "next",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
@@ -23,8 +22,8 @@
     "react-hooks/exhaustive-deps": "error",
     "prefer-const": "error",
     "no-var": "error",
-    "react/react-in-jsx-scope": "off", 
-    "react/prop-types": "off" 
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off"
   },
   "settings": {
     "react": {
