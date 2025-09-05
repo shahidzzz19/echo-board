@@ -64,8 +64,8 @@ export async function GET() {
     const trending = [...newsItems, ...recItems, ...socialItems]
 
     return NextResponse.json(trending)
-  } catch (err) {
-    console.error("Error fetching trending data:", err)
+  } catch (_err) {
+    console.error("Error fetching trending data:", _err)
     return NextResponse.json({ error: "Failed to fetch trending content" }, { status: 500 })
   }
 }

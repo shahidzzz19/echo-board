@@ -56,7 +56,7 @@ export const contentApi = createApi({
           const socialItems = (socialRes || []).map((item: any, i: number) => ({ id: `social-${page}-${i}`, type: "social", ...item }))
 
           return { data: [...newsItems, ...recItems, ...socialItems] }
-        } catch (err) {
+        } catch (_err) {
           return { error: { status: 500, data: "Failed to fetch content" } }
         }
       },
@@ -93,7 +93,7 @@ export const contentApi = createApi({
         try {
           const res = await fetch(`/api/trending`).then(res => res.json())
           return { data: res }
-        } catch (err) {
+        } catch (_err) {
           return { error: { status: 500, data: "Failed to fetch trending" } }
         }
       },
@@ -117,7 +117,7 @@ export const contentApi = createApi({
         try {
           const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`).then(r => r.json())
           return { data: res }
-        } catch (err) {
+        } catch (_err) {
           return { error: { status: 500, data: "Failed to search content" } }
         }
       },

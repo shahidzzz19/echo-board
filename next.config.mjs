@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -21,7 +23,7 @@ const nextConfig = {
       { protocol: "https", hostname: "static.politico.com" },
       { protocol: "https", hostname: "s.yimg.com" },
       { protocol: "https", hostname: "nypost.com" },
-      { protocol: "https", hostname: "uploads.guim.co.uk" }, // Guardian
+      { protocol: "https", hostname: "uploads.guim.co.uk" },
       { protocol: "https", hostname: "techcrunch.com" },
       { protocol: "https", hostname: "cdn.arstechnica.net" },
 
@@ -29,10 +31,10 @@ const nextConfig = {
       { protocol: "https", hostname: "external-preview.redd.it" },
       { protocol: "https", hostname: "b.thumbs.redditmedia.com" },
       { protocol: "https", hostname: "preview.redd.it" },
-      { protocol: "https", hostname: "pbs.twimg.com" }, // Twitter images
-      { protocol: "https", hostname: "*.fbcdn.net" }, // Facebook/Instagram CDN
+      { protocol: "https", hostname: "pbs.twimg.com" },
+      { protocol: "https", hostname: "*.fbcdn.net" },
       { protocol: "https", hostname: "*.cdninstagram.com" },
-      { protocol: "https", hostname: "yt3.ggpht.com" }, // YouTube avatars
+      { protocol: "https", hostname: "yt3.ggpht.com" },
 
       // Entertainment/media
       { protocol: "https", hostname: "image.tmdb.org" },
@@ -43,13 +45,13 @@ const nextConfig = {
       { protocol: "https", hostname: "placekitten.com" },
       { protocol: "https", hostname: "picsum.photos" },
 
-      // Wildcards to catch edge cases
-      { protocol: "https", hostname: "*.brightspotcdn.com" }, // any Brightspot CDN
-      { protocol: "https", hostname: "*.wp.com" }, // WordPress-hosted images
-      { protocol: "https", hostname: "*.cloudfront.net" }, // CloudFront CDNs
-      { protocol: "https", hostname: "*.akamaihd.net" }, // Akamai CDNs
-      { protocol: "https", hostname: "*.fastly.net" }, // Fastly
-      { protocol: "https", hostname: "*.cdn.digitaloceanspaces.com" }, // Spaces CDN
+      // Wildcards
+      { protocol: "https", hostname: "*.brightspotcdn.com" },
+      { protocol: "https", hostname: "*.wp.com" },
+      { protocol: "https", hostname: "*.cloudfront.net" },
+      { protocol: "https", hostname: "*.akamaihd.net" },
+      { protocol: "https", hostname: "*.fastly.net" },
+      { protocol: "https", hostname: "*.cdn.digitaloceanspaces.com" },
 
       // CNET
       { protocol: "https", hostname: "www.cnet.com" },
@@ -61,14 +63,7 @@ const nextConfig = {
       { protocol: "https", hostname: "*.theverge.com" },
 
       // Engadget
-      { protocol: "https", hostname: "s.yimg.com" }, // already added for Yahoo
       { protocol: "https", hostname: "www.engadget.com" },
-
-      // Generic wildcards for edge cases
-      { protocol: "https", hostname: "*.wp.com" }, // WordPress CDN
-      { protocol: "https", hostname: "*.cloudfront.net" },
-      { protocol: "https", hostname: "*.akamaihd.net" },
-      { protocol: "https", hostname: "*.fastly.net" },
     ],
   },
   reactStrictMode: true,

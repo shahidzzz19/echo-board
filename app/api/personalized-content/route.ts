@@ -34,8 +34,8 @@ export async function GET(req: Request) {
           }))
         );
       }
-    } catch (err) {
-      console.error("News fetch error:", err);
+    } catch (_err) {
+      console.error("News fetch error:", _err);
     }
   }
 
@@ -61,8 +61,8 @@ export async function GET(req: Request) {
         }))
       );
     }
-  } catch (err) {
-    console.error("TMDB fetch error:", err);
+  } catch (_err) {
+    console.error("TMDB fetch error:", _err);
   }
 
   return NextResponse.json(items);

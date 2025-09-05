@@ -1,33 +1,28 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-const TMDB_KEY = process.env.NEXT_PUBLIC_TMDB_KEY
-
-export async function GET(req: NextRequest) {
-  if (!TMDB_KEY) {
-    return NextResponse.json({ error: "TMDB API key missing" }, { status: 500 })
-  }
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const page = searchParams.get("page") || "1"
 
   try {
     const res = await fetch(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}&language=en-US&page=1`
+      `https://api.themoviedb.org/3/trending/all/day?api_key=${process.env.TMDB_API_KEY}&page=${page}`
     )
     const data = await res.json()
 
-    const items = (data.results || []).map((movie: any) => ({
-      id: `movie-${movie.id}`,
-      type: "recommendation",
-      title: movie.title,
-      description: movie.overview,
-      image: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-      url: `https://www.themoviedb.org/movie/${movie.id}`,
-      category: "entertainment",
-      publishedAt: movie.release_date,
+    const items = (data.results || []).map((m: any) => ({
+      id: `rec-${m.id}`,
+      title: m.title || m.name,
+      description: m.overview,
+      url: `https://www.themoviedb.org/${m.media_type}/${m.id}`,
+      image: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
+      category: m.media_type,
+      publishedAt: m.release_date || m.first_air_date,
       source: "TMDB",
-      trending: false,
     }))
 
     return NextResponse.json(items)
-  } catch (err) {
+  } catch (_err) {
     return NextResponse.json({ error: "Failed to fetch recommendations" }, { status: 500 })
   }
 }

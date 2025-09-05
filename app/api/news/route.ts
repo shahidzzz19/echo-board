@@ -1,36 +1,30 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY
-
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const category = searchParams.get("category") || "general"
-
-  if (!NEWS_API_KEY) {
-    return NextResponse.json({ error: "News API key missing" }, { status: 500 })
-  }
+  const category = searchParams.get("category") || "technology"
+  const page = searchParams.get("page") || "1"
+  const pageSize = searchParams.get("pageSize") || "10"
 
   try {
     const res = await fetch(
-      `https://newsapi.org/v2/top-headlines?category=${category}&pageSize=10&apiKey=${NEWS_API_KEY}`
+      `https://newsapi.org/v2/top-headlines?category=${category}&page=${page}&pageSize=${pageSize}&apiKey=${process.env.NEWS_API_KEY}`
     )
     const data = await res.json()
 
-    const items = (data.articles || []).map((article: any, i: number) => ({
-      id: `news-${i}`,
-      type: "news",
-      title: article.title,
-      description: article.description,
-      image: article.urlToImage,
-      url: article.url,
+    const items = (data.articles || []).map((a: any, i: number) => ({
+      id: `news-${page}-${i}`,
+      title: a.title,
+      description: a.description,
+      url: a.url,
+      image: a.urlToImage,
       category,
-      publishedAt: article.publishedAt,
-      source: article.source?.name || "Unknown",
-      trending: false,
+      publishedAt: a.publishedAt,
+      source: a.source?.name,
     }))
 
     return NextResponse.json(items)
-  } catch (err) {
+  } catch (_err) {
     return NextResponse.json({ error: "Failed to fetch news" }, { status: 500 })
   }
 }

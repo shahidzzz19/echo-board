@@ -26,8 +26,8 @@ export function TrendingSection() {
         if (!res.ok) throw new Error("Failed to fetch trending content")
         const data: FeedItem[] = await res.json()
         setItems(data.slice(0, 10)) // limit to 10 items
-      } catch (err) {
-        console.error(err)
+      } catch (_err) {
+        console.error(_err)
       } finally {
         setLoading(false)
       }
