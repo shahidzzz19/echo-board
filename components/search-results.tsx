@@ -9,19 +9,33 @@ import { setResults, setLoading, setError } from "@/lib/slices/searchSlice"
 import { ContentCard } from "./content-card"
 import { ContentSkeleton } from "./content-skeleton"
 
+// Use ContentItem type from contentSlice to ensure compatibility
+import type { ContentItem } from "@/lib/slices/contentSlice"
+
+interface UserPreferences {
+  layout: "grid" | "list"
+}
+
 export function SearchResults() {
   const dispatch = useAppDispatch()
-  const { query, results, filters } = useAppSelector((state) => state.search)
-  const { preferences } = useAppSelector((state) => state.user)
 
-  const { data, isLoading, error } = useSearchContentQuery({ query, filters }, { skip: !query.trim() })
+  const { query, results } = useAppSelector((state: any) => state.search as { query: string; results: ContentItem[] })
+  const { preferences } = useAppSelector((state: any) => state.user as { preferences: UserPreferences })
 
+  // Call RTK Query endpoint with optional filters
+  const { data, isLoading, error } = useSearchContentQuery(
+    { query, filters: undefined }, // you can later pass filters like { category: ["technology"] }
+    { skip: !query.trim() }
+  )
+
+  // Update Redux results
   useEffect(() => {
     if (data) {
       dispatch(setResults(data))
     }
   }, [data, dispatch])
 
+  // Update loading and error
   useEffect(() => {
     dispatch(setLoading(isLoading))
     if (error) {
@@ -29,6 +43,7 @@ export function SearchResults() {
     }
   }, [isLoading, error, dispatch])
 
+  // No query UI
   if (!query.trim()) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -38,6 +53,7 @@ export function SearchResults() {
     )
   }
 
+  // Loading UI
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -56,6 +72,7 @@ export function SearchResults() {
     )
   }
 
+  // Results UI
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -69,7 +86,9 @@ export function SearchResults() {
       {results.length > 0 ? (
         <motion.div
           className={`grid gap-3 sm:gap-4 lg:gap-6 ${
-            preferences.layout === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"
+            preferences.layout === "grid"
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+              : "grid-cols-1"
           }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
