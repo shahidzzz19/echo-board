@@ -30,7 +30,7 @@ export function DraggableContentCard({ item, index }: DraggableContentCardProps)
     }),
   })
 
-  // Drop hook with correct type
+  // Drop hook
   const [, drop] = useDrop<DragItem, void, unknown>({
     accept: "content-card",
     hover(draggedItem: DragItem, monitor: DropTargetMonitor) {

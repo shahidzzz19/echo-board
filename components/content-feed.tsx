@@ -9,13 +9,13 @@ import {
   appendItems,
   setLoading,
   setError,
+  ContentItem,
 } from "@/lib/slices/contentSlice"
 import { ContentSkeleton } from "./content-skeleton"
 import { DraggableContentCard } from "./draggable-content-card"
 import { useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll"
-import type { ContentItem } from "@/lib/slices/contentSlice"
 
-// Fetcher for SWR
+// Generic fetcher
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function ContentFeed() {
@@ -23,24 +23,22 @@ export function ContentFeed() {
   const { preferences } = useAppSelector((state) => state.user)
   const { items } = useAppSelector((state) => state.content)
 
-  // SWR key function
   const getKey = (pageIndex: number, previousPageData: ContentItem[] | null) => {
-    if (previousPageData && previousPageData.length === 0) return null // end
-    const categories = preferences.categories.join(",")
-    return `/api/trending?page=${pageIndex + 1}&categories=${categories}`
+    if (previousPageData && !previousPageData.length) return null
+    return `/api/trending?page=${pageIndex + 1}&categories=${preferences.categories.join(",")}`
   }
 
-  const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<ContentItem[]>(getKey, fetcher)
+  const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<
+    ContentItem[]
+  >(getKey, fetcher)
 
-  // Flatten + dedupe items
   const flatItems = useMemo(() => {
     if (!data) return []
-    const merged = ([] as ContentItem[]).concat(...data)
+    const merged: ContentItem[] = ([] as ContentItem[]).concat(...data)
     const unique = Array.from(new Map(merged.map((i) => [i.id, i])).values())
     return unique
   }, [data])
 
-  // Update Redux store when data changes
   useEffect(() => {
     if (flatItems.length > 0) {
       if (size === 1) {
@@ -51,20 +49,17 @@ export function ContentFeed() {
     }
   }, [flatItems, size, dispatch])
 
-  // Handle loading & errors
   useEffect(() => {
     dispatch(setLoading(isLoading || isValidating))
     if (error) dispatch(setError("Failed to load content"))
   }, [isLoading, isValidating, error, dispatch])
 
-  // Infinite scroll
   const loadMore = useCallback(() => {
     if (!isLoading && !isValidating) setSize(size + 1)
   }, [isLoading, isValidating, size, setSize])
 
   const [lastElementRef] = useInfiniteScroll(loadMore, isLoading)
 
-  // Skeleton for initial load
   if (isLoading && size === 1) {
     return (
       <div className="space-y-6">
@@ -102,10 +97,7 @@ export function ContentFeed() {
         transition={{ duration: 0.5 }}
       >
         {items.map((item, index) => (
-          <div
-            key={item.id}
-            ref={index === items.length - 1 ? lastElementRef : null}
-          >
+          <div key={item.id || `feed-item-${index}`} ref={index === items.length - 1 ? lastElementRef : null}>
             <DraggableContentCard item={item} index={index} />
           </div>
         ))}
@@ -113,7 +105,7 @@ export function ContentFeed() {
 
       {isLoading && size > 1 && (
         <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       )}
 

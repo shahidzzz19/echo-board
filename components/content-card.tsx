@@ -11,6 +11,7 @@ import type { ContentItem } from "@/lib/slices/contentSlice"
 import Image from "next/image"
 import clsx from "clsx"
 import { useState } from "react"
+import React from 'react';
 
 interface ContentCardProps {
   item: ContentItem

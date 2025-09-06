@@ -12,6 +12,7 @@ import { FavoritesSection } from "./favorites-section"
 import { SearchResults } from "./search-results"
 import { UserPreferencesModal } from "./user-preferences-modal"
 import { useAppSelector } from "@/lib/hooks"
+import React from 'react';
 
 export function Dashboard() {
   const [activeSection, setActiveSection] = useState<"feed" | "trending" | "favorites" | "search">("feed")

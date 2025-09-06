@@ -1,51 +1,48 @@
-import js from "@eslint/js";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
+// eslint.config.mts
+import { defineConfig } from "eslint";
 
-export default defineConfig([
-  // JavaScript
-  {
-    files: ["**/*.{js,mjs,cjs}"],
-    languageOptions: {
-      globals: globals.browser,
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
-    },
-    extends: ["eslint:recommended"],
-  },
-
-  // TypeScript
-  {
-    files: ["**/*.{ts,tsx,mts,cts}"],
-    languageOptions: {
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
-    },
-    extends: ["plugin:@typescript-eslint/recommended"],
-    rules: {
-      // optional TS-specific rule overrides
+export default defineConfig({
+  root: true,
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
     },
   },
-
-  // React
-  {
-    files: ["**/*.{jsx,tsx}"],
-    languageOptions: {
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-    extends: ["plugin:react/recommended"],
-    settings: {
-      react: {
-        version: "detect",
-      },
+  plugins: ["@typescript-eslint", "react", "react-hooks", "prettier"],
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
+    "next/core-web-vitals",
+  ],
+  settings: {
+    react: {
+      version: "detect",
     },
   },
-]);
+  rules: {
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "react-hooks/exhaustive-deps": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+  },
+  overrides: [
+    {
+      files: ["**/__tests__/**/*", "**/*.test.*"],
+      env: {
+        jest: true,
+      },
+      rules: {
+        "@typescript-eslint/no-explicit-any": "off",
+      },
+    },
+  ],
+});

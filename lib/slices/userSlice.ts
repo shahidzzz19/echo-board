@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 export interface UserPreferences {
+  hashtag: string
   categories: string[]
   language: string
   darkMode: boolean
@@ -24,6 +25,7 @@ const initialState: UserState = {
     language: "en",
     darkMode: false,
     layout: "grid",
+    hashtag: ""
   },
   favorites: [],
   isAuthenticated: false,
