@@ -1,35 +1,35 @@
-"use client"
+'use client';
 
-import React from "react"
-import { motion } from "framer-motion"
-import { Home, TrendingUp, Heart, Settings, User, Moon, Sun } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import { updatePreferences } from "@/lib/slices/userSlice"
-import { useTheme } from "next-themes"
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Home, TrendingUp, Heart, Settings, User, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import { updatePreferences } from '@/lib/slices/userSlice';
 
 interface SidebarProps {
-  activeSection: "feed" | "trending" | "favorites" | "search"
-  onSectionChange: (section: "feed" | "trending" | "favorites" | "search") => void
-  onOpenPreferences: () => void
+  activeSection: 'feed' | 'trending' | 'favorites' | 'search';
+  onSectionChange: (section: 'feed' | 'trending' | 'favorites' | 'search') => void;
+  onOpenPreferences: () => void;
 }
 
 export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: SidebarProps) {
-  const dispatch = useAppDispatch()
-  const { theme, setTheme } = useTheme()
-  const favorites = useAppSelector((state) => state.user.favorites)
+  const dispatch = useAppDispatch();
+  const { theme, setTheme } = useTheme();
+  const favorites = useAppSelector((state) => state.user.favorites);
 
   const menuItems = [
-    { id: "feed", label: "Feed", icon: Home },
-    { id: "trending", label: "Trending", icon: TrendingUp },
-    { id: "favorites", label: "Favorites", icon: Heart, badge: favorites.length },
-  ]
+    { id: 'feed', label: 'Feed', icon: Home },
+    { id: 'trending', label: 'Trending', icon: TrendingUp },
+    { id: 'favorites', label: 'Favorites', icon: Heart, badge: favorites.length },
+  ];
 
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark"
-    setTheme(newTheme)
-    dispatch(updatePreferences({ darkMode: newTheme === "dark" }))
-  }
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    dispatch(updatePreferences({ darkMode: newTheme === 'dark' }));
+  };
 
   return (
     <motion.aside
@@ -46,7 +46,7 @@ export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: S
         {menuItems.map((item) => (
           <Button
             key={item.id}
-            variant={activeSection === item.id ? "default" : "ghost"}
+            variant={activeSection === item.id ? 'default' : 'ghost'}
             className="w-full justify-start text-sm lg:text-base h-9 lg:h-10"
             onClick={() => onSectionChange(item.id as any)}
           >
@@ -62,9 +62,17 @@ export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: S
       </nav>
 
       <div className="p-3 lg:p-4 border-t border-border space-y-1 lg:space-y-2">
-        <Button variant="ghost" className="w-full justify-start text-sm lg:text-base h-9 lg:h-10" onClick={toggleTheme}>
-          {theme === "dark" ? <Sun className="mr-2 lg:mr-3 h-4 w-4" /> : <Moon className="mr-2 lg:mr-3 h-4 w-4" />}
-          <span className="truncate">{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-sm lg:text-base h-9 lg:h-10"
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? (
+            <Sun className="mr-2 lg:mr-3 h-4 w-4" />
+          ) : (
+            <Moon className="mr-2 lg:mr-3 h-4 w-4" />
+          )}
+          <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
         </Button>
 
         <Button
@@ -82,5 +90,5 @@ export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: S
         </Button>
       </div>
     </motion.aside>
-  )
+  );
 }

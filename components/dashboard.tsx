@@ -1,57 +1,62 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { DndProvider } from "react-dnd"
-import { HTML5Backend } from "react-dnd-html5-backend"
-import { motion } from "framer-motion"
-import { Sidebar } from "./sidebar"
-import { Header } from "./header"
-import { ContentFeed } from "./content-feed"
-import { TrendingSection } from "./trending-section"
-import { FavoritesSection } from "./favorites-section"
-import { SearchResults } from "./search-results"
-import { UserPreferencesModal } from "./user-preferences-modal"
-import { useAppSelector } from "@/lib/hooks"
-import React from "react"
+import { useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { motion } from 'framer-motion';
+import React from 'react';
+import { Sidebar } from './sidebar';
+import { Header } from './header';
+import { ContentFeed } from './content-feed';
+import { TrendingSection } from './trending-section';
+import { FavoritesSection } from './favorites-section';
+import { SearchResults } from './search-results';
+import { UserPreferencesModal } from './user-preferences-modal';
+import { useAppSelector } from '@/lib/hooks';
 
 export function Dashboard() {
-  const [activeSection, setActiveSection] = useState<"feed" | "trending" | "favorites" | "search">("feed")
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false)
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
-  const searchQuery = useAppSelector((state) => state.search.query)
+  const [activeSection, setActiveSection] = useState<'feed' | 'trending' | 'favorites' | 'search'>(
+    'feed',
+  );
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const searchQuery = useAppSelector((state) => state.search.query);
 
   const renderContent = () => {
-    if (searchQuery.trim()) return <SearchResults />
+    if (searchQuery.trim()) return <SearchResults />;
 
     switch (activeSection) {
-      case "trending":
-        return <TrendingSection />
-      case "favorites":
-        return <FavoritesSection />
+      case 'trending':
+        return <TrendingSection />;
+      case 'favorites':
+        return <FavoritesSection />;
       default:
-        return <ContentFeed />
+        return <ContentFeed />;
     }
-  }
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Mobile backdrop */}
         {isMobileSidebarOpen && (
-          <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsMobileSidebarOpen(false)} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
         )}
 
         {/* Sidebar */}
         <div
-          className={`${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+          className={`${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
                       lg:translate-x-0 transition-transform duration-300 
                       ease-in-out fixed lg:relative z-50`}
         >
           <Sidebar
             activeSection={activeSection}
             onSectionChange={(section) => {
-              setActiveSection(section)
-              setIsMobileSidebarOpen(false)
+              setActiveSection(section);
+              setIsMobileSidebarOpen(false);
             }}
             onOpenPreferences={() => setIsPreferencesOpen(true)}
           />
@@ -76,8 +81,11 @@ export function Dashboard() {
           </main>
         </div>
 
-        <UserPreferencesModal isOpen={isPreferencesOpen} onClose={() => setIsPreferencesOpen(false)} />
+        <UserPreferencesModal
+          isOpen={isPreferencesOpen}
+          onClose={() => setIsPreferencesOpen(false)}
+        />
       </div>
     </DndProvider>
-  )
+  );
 }

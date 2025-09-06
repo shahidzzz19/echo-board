@@ -1,39 +1,50 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Grid, List } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import { updatePreferences } from "@/lib/slices/userSlice"
+import { useState } from 'react';
+import { Grid, List } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import { updatePreferences } from '@/lib/slices/userSlice';
 
 interface UserPreferencesModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function UserPreferencesModal({ isOpen, onClose }: UserPreferencesModalProps) {
-  const dispatch = useAppDispatch()
-  const { preferences } = useAppSelector((state) => state.user)
+  const dispatch = useAppDispatch();
+  const { preferences } = useAppSelector((state) => state.user);
 
-  const [localPreferences, setLocalPreferences] = useState(preferences)
+  const [localPreferences, setLocalPreferences] = useState(preferences);
 
-  const categories = ["technology", "sports", "finance", "entertainment", "health", "science", "politics", "business"]
+  const categories = [
+    'technology',
+    'sports',
+    'finance',
+    'entertainment',
+    'health',
+    'science',
+    'politics',
+    'business',
+  ];
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     setLocalPreferences((prev) => ({
       ...prev,
-      categories: checked ? [...prev.categories, category] : prev.categories.filter((c) => c !== category),
-    }))
-  }
+      categories: checked
+        ? [...prev.categories, category]
+        : prev.categories.filter((c) => c !== category),
+    }));
+  };
 
   const handleSave = () => {
-    dispatch(updatePreferences(localPreferences))
-    onClose()
-  }
+    dispatch(updatePreferences(localPreferences));
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -41,23 +52,31 @@ export function UserPreferencesModal({ isOpen, onClose }: UserPreferencesModalPr
         <DialogHeader>
           <DialogTitle>User Preferences</DialogTitle>
           <p id="preferences-description" className="text-sm text-muted-foreground">
-            Customize your content dashboard experience by selecting your preferred categories and layout options.
+            Customize your content dashboard experience by selecting your preferred categories and
+            layout options.
           </p>
         </DialogHeader>
 
         <div className="space-y-6">
           <div>
             <Label className="text-base font-medium">Content Categories</Label>
-            <p className="text-sm text-muted-foreground mb-3">Select categories you're interested in</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              Select categories you're interested in
+            </p>
             <div className="grid grid-cols-2 gap-3">
               {categories.map((category) => (
                 <div key={category} className="flex items-center space-x-2">
                   <Checkbox
                     id={category}
                     checked={localPreferences.categories.includes(category)}
-                    onCheckedChange={(checked) => handleCategoryChange(category, checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      handleCategoryChange(category, checked as boolean)
+                    }
                   />
-                  <Label htmlFor={category} className="text-sm font-normal capitalize cursor-pointer">
+                  <Label
+                    htmlFor={category}
+                    className="text-sm font-normal capitalize cursor-pointer"
+                  >
                     {category}
                   </Label>
                 </div>
@@ -67,10 +86,14 @@ export function UserPreferencesModal({ isOpen, onClose }: UserPreferencesModalPr
 
           <div>
             <Label className="text-base font-medium">Layout Preference</Label>
-            <p className="text-sm text-muted-foreground mb-3">Choose how you want to view content</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              Choose how you want to view content
+            </p>
             <RadioGroup
               value={localPreferences.layout}
-              onValueChange={(value) => setLocalPreferences((prev) => ({ ...prev, layout: value as "grid" | "list" }))}
+              onValueChange={(value) =>
+                setLocalPreferences((prev) => ({ ...prev, layout: value as 'grid' | 'list' }))
+              }
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="grid" id="grid" />
@@ -98,5 +121,5 @@ export function UserPreferencesModal({ isOpen, onClose }: UserPreferencesModalPr
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

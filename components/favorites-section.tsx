@@ -1,22 +1,22 @@
-"use client"
+'use client';
 
-import { useEffect } from "react"
-import { motion } from "framer-motion"
-import { Heart } from "lucide-react"
-import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import { updateFavoriteItems } from "@/lib/slices/contentSlice"
-import { ContentCard } from "./content-card"
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Heart } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import { updateFavoriteItems } from '@/lib/slices/contentSlice';
+import { ContentCard } from './content-card';
 
 export function FavoritesSection() {
-  const dispatch = useAppDispatch()
-  const { favorites } = useAppSelector((state) => state.user)
-  const { items, favoriteItems } = useAppSelector((state) => state.content)
-  const { preferences } = useAppSelector((state) => state.user)
+  const dispatch = useAppDispatch();
+  const { favorites } = useAppSelector((state) => state.user);
+  const { items, favoriteItems } = useAppSelector((state) => state.content);
+  const { preferences } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    const favItems = items.filter((item) => favorites.includes(item.id))
-    dispatch(updateFavoriteItems(favItems))
-  }, [favorites, items, dispatch])
+    const favItems = items.filter((item) => favorites.includes(item.id));
+    dispatch(updateFavoriteItems(favItems));
+  }, [favorites, items, dispatch]);
 
   return (
     <div className="space-y-6">
@@ -31,7 +31,9 @@ export function FavoritesSection() {
       {favoriteItems.length > 0 ? (
         <motion.div
           className={`grid gap-3 sm:gap-4 lg:gap-6 ${
-            preferences.layout === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"
+            preferences.layout === 'grid'
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
+              : 'grid-cols-1'
           }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -56,5 +58,5 @@ export function FavoritesSection() {
         </div>
       )}
     </div>
-  )
+  );
 }

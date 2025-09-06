@@ -1,39 +1,39 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState, useCallback } from "react"
-import { Search, Settings, Bell, User, Menu } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useAppDispatch, useAppSelector } from "@/lib/hooks"
-import { setQuery } from "@/lib/slices/searchSlice"
-import { useDebounce } from "@/lib/hooks/useDebounce"
+import { useState, useCallback } from 'react';
+import { Search, Settings, Bell, User, Menu } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { setQuery } from '@/lib/slices/searchSlice';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 interface HeaderProps {
-  onOpenPreferences: () => void
-  onToggleMobileSidebar?: () => void
+  onOpenPreferences: () => void;
+  onToggleMobileSidebar?: () => void;
 }
 
 export function Header({ onOpenPreferences, onToggleMobileSidebar }: HeaderProps) {
-  const dispatch = useAppDispatch()
-  const [searchInput, setSearchInput] = useState("")
-  const profile = useAppSelector((state) => state.user.profile)
+  const dispatch = useAppDispatch();
+  const [searchInput, setSearchInput] = useState('');
+  const profile = useAppSelector((state) => state.user.profile);
 
   // Debounced search
   const debouncedSearch = useCallback(
     useDebounce((query: string) => {
-      dispatch(setQuery(query))
+      dispatch(setQuery(query));
     }, 300),
     [dispatch],
-  )
+  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchInput(value)
-    debouncedSearch(value)
-  }
+    const value = e.target.value;
+    setSearchInput(value);
+    debouncedSearch(value);
+  };
 
   return (
     <header className="h-14 sm:h-16 border-b border-border bg-card px-3 sm:px-4 lg:px-6 flex items-center justify-between">
@@ -65,17 +65,22 @@ export function Header({ onOpenPreferences, onToggleMobileSidebar }: HeaderProps
           <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
 
-        <Button variant="ghost" size="icon" onClick={onOpenPreferences} className="h-8 w-8 sm:h-9 sm:w-9">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onOpenPreferences}
+          className="h-8 w-8 sm:h-9 sm:w-9"
+        >
           <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
 
         <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
-          <AvatarImage src={profile?.avatar || "/placeholder.svg"} />
+          <AvatarImage src={profile?.avatar || '/placeholder.svg'} />
           <AvatarFallback>
             <User className="h-3 w-3 sm:h-4 sm:w-4" />
           </AvatarFallback>
         </Avatar>
       </div>
     </header>
-  )
+  );
 }

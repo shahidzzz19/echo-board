@@ -1,56 +1,60 @@
-"use client"
+'use client';
 
-import { useEffect } from "react"
-import { motion } from "framer-motion"
-import { Search } from "lucide-react"
-import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import { useSearchContentQuery } from "@/lib/api/contentApi"
-import { setResults, setLoading, setError } from "@/lib/slices/searchSlice"
-import { ContentCard } from "./content-card"
-import { ContentSkeleton } from "./content-skeleton"
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Search } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import { useSearchContentQuery } from '@/lib/api/contentApi';
+import { setResults, setLoading, setError } from '@/lib/slices/searchSlice';
+import { ContentCard } from './content-card';
+import { ContentSkeleton } from './content-skeleton';
 
 // Use ContentItem type from contentSlice to ensure compatibility
-import type { ContentItem } from "@/lib/slices/contentSlice"
+import type { ContentItem } from '@/lib/slices/contentSlice';
 
 // Optional: define search state type
 interface SearchState {
-  query: string
-  results: ContentItem[]
+  query: string;
+  results: ContentItem[];
 }
 
 interface UserPreferences {
-  layout: "grid" | "list"
+  layout: 'grid' | 'list';
 }
 
 // Type for search query args with optional filters
 type SearchQueryArgs = {
-  query: string
-  filters?: { category?: string[] }
-}
+  query: string;
+  filters?: { category?: string[] };
+};
 
 export function SearchResults() {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
-  const { query, results } = useAppSelector((state: any) => state.search as SearchState)
-  const { preferences } = useAppSelector((state: any) => state.user as { preferences: UserPreferences })
+  const { query, results } = useAppSelector((state: any) => state.search as SearchState);
+  const { preferences } = useAppSelector(
+    (state: any) => state.user as { preferences: UserPreferences },
+  );
 
   // Call RTK Query endpoint with optional filters
-  const { data, isLoading, error } = useSearchContentQuery({ query } as SearchQueryArgs, { skip: !query.trim() })
+  const { data, isLoading, error } = useSearchContentQuery({ query } as SearchQueryArgs, {
+    skip: !query.trim(),
+  });
 
   // Update Redux results
   useEffect(() => {
     if (data) {
-      dispatch(setResults(data as ContentItem[]))
+      dispatch(setResults(data as ContentItem[]));
     }
-  }, [data, dispatch])
+  }, [data, dispatch]);
 
   // Update loading and error
   useEffect(() => {
-    dispatch(setLoading(isLoading))
+    dispatch(setLoading(isLoading));
     if (error) {
-      dispatch(setError("Failed to search content"))
+      dispatch(setError('Failed to search content'));
     }
-  }, [isLoading, error, dispatch])
+  }, [isLoading, error, dispatch]);
 
   // No query UI
   if (!query.trim()) {
@@ -59,7 +63,7 @@ export function SearchResults() {
         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
         <p>Start typing to search for content</p>
       </div>
-    )
+    );
   }
 
   // Loading UI
@@ -71,14 +75,14 @@ export function SearchResults() {
           <h2 className="text-2xl font-bold">Searching for "{query}"</h2>
         </div>
         <div
-          className={`grid gap-6 ${preferences.layout === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}
+          className={`grid gap-6 ${preferences.layout === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}
         >
           {Array.from({ length: 6 }).map((_, i) => (
             <ContentSkeleton key={i} />
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   // Results UI
@@ -95,7 +99,9 @@ export function SearchResults() {
       {results.length > 0 ? (
         <motion.div
           className={`grid gap-3 sm:gap-4 lg:gap-6 ${
-            preferences.layout === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"
+            preferences.layout === 'grid'
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
+              : 'grid-cols-1'
           }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -120,5 +126,5 @@ export function SearchResults() {
         </div>
       )}
     </div>
-  )
+  );
 }
