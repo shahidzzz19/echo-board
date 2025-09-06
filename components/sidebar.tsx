@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { updatePreferences } from '@/lib/slices/userSlice';
+import type { RootState } from '@/lib/store';
 
 interface SidebarProps {
   activeSection: 'feed' | 'trending' | 'favorites' | 'search';
@@ -17,7 +18,9 @@ interface SidebarProps {
 export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: SidebarProps) {
   const dispatch = useAppDispatch();
   const { theme, setTheme } = useTheme();
-  const favorites = useAppSelector((state) => state.user.favorites);
+
+  // ✅ Type-safe selector
+  const favorites = useAppSelector((state: RootState) => state.user?.favorites ?? []);
 
   const menuItems = [
     { id: 'feed', label: 'Feed', icon: Home },
@@ -67,11 +70,7 @@ export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: S
           className="w-full justify-start text-sm lg:text-base h-9 lg:h-10"
           onClick={toggleTheme}
         >
-          {theme === 'dark' ? (
-            <Sun className="mr-2 lg:mr-3 h-4 w-4" />
-          ) : (
-            <Moon className="mr-2 lg:mr-3 h-4 w-4" />
-          )}
+          {theme === 'dark' ? <Sun className="mr-2 lg:mr-3 h-4 w-4" /> : <Moon className="mr-2 lg:mr-3 h-4 w-4" />}
           <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
         </Button>
 

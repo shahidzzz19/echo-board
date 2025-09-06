@@ -1,38 +1,57 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers } from '@reduxjs/toolkit';
-import { contentApi } from './api/contentApi';
-import userSlice from './slices/userSlice';
-import contentSlice from './slices/contentSlice';
-import searchSlice from './slices/searchSlice';
+// lib/store.ts
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // localStorage for browser
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  whitelist: ['user'], // Only persist user preferences
+// Import your slice reducers
+import contentReducer from './slices/contentSlice';
+import userReducer from './slices/userSlice';
+import searchReducer from './slices/searchSlice';
+
+// ✅ Custom noop storage for SSR
+const createNoopStorage = () => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    setItem(_key: string, value: string) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key: string) {
+      return Promise.resolve();
+    },
+  };
 };
 
+// 1️⃣ Persist configuration
+const persistConfig = {
+  key: 'root',
+  storage: typeof window !== 'undefined' ? storage : createNoopStorage(),
+  whitelist: ['user'], // persist only user slice
+};
+
+// 2️⃣ Root reducer
 const rootReducer = combineReducers({
-  user: userSlice,
-  content: contentSlice,
-  search: searchSlice,
-  [contentApi.reducerPath]: contentApi.reducer,
+  content: contentReducer,
+  user: userReducer,
+  search: searchReducer,
 });
 
+// 3️⃣ Persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+// 4️⃣ Store configuration
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
-      },
-    }).concat(contentApi.middleware),
+      serializableCheck: false, // disable for redux-persist
+    }),
 });
 
+// 5️⃣ Persistor
 export const persistor = persistStore(store);
 
+// 6️⃣ Type helpers
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

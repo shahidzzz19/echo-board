@@ -1,17 +1,17 @@
 'use client';
 
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ExternalLink, Clock, Tag } from 'lucide-react';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { useState } from 'react';
-import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { toggleFavorite } from '@/lib/slices/userSlice';
 import type { ContentItem } from '@/lib/slices/contentSlice';
+import { Slot } from '@radix-ui/react-slot';
 
 interface ContentCardProps {
   item: ContentItem;
@@ -20,7 +20,7 @@ interface ContentCardProps {
 
 export function ContentCard({ item, className }: ContentCardProps) {
   const dispatch = useAppDispatch();
-  const favorites = useAppSelector((state) => state.user.favorites);
+  const favorites = useAppSelector((state) => state.user.favorites as string[]);
   const isFavorite = favorites.includes(item.id);
   const [imgError, setImgError] = useState(false);
 
@@ -41,17 +41,14 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'news':
-        return 'bg-blue-500';
-      case 'recommendation':
-        return 'bg-green-500';
-      case 'social':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
+      case 'news': return 'bg-blue-500';
+      case 'recommendation': return 'bg-green-500';
+      case 'social': return 'bg-purple-500';
+      default: return 'bg-gray-500';
     }
   };
 
+  // Safely check allowed external domains
   const isSafeDomain = (url: string) => {
     try {
       const hostname = new URL(url).hostname;
@@ -70,6 +67,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
     }
   };
 
+  // Always fallback to placeholder on error
   const imageUrl = !imgError && item.image ? item.image : '/placeholder.svg';
 
   return (
@@ -89,6 +87,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
               height={200}
               className="w-full h-full object-cover transition-transform hover:scale-105"
               onError={() => setImgError(true)}
+              unoptimized // Prevent Next.js optimization errors for external images
             />
           ) : (
             <img
@@ -101,7 +100,9 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
           {/* Type Badge */}
           <div className="absolute top-2 left-2">
-            <Badge className={`${getTypeColor(item.type)} text-white text-xs`}>{item.type}</Badge>
+            <Badge className={`${getTypeColor(item.type)} text-white text-xs`}>
+              {item.type}
+            </Badge>
           </div>
 
           {/* Trending Badge */}
@@ -126,7 +127,6 @@ export function ContentCard({ item, className }: ContentCardProps) {
           <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 mb-3">
             {item.description}
           </p>
-
           <div className="flex items-center gap-1 sm:gap-2 text-xs text-muted-foreground flex-wrap">
             <Tag className="h-3 w-3 flex-shrink-0" />
             <span className="truncate">{item.category}</span>
@@ -137,8 +137,9 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
         {/* Footer: Source + Actions */}
         <CardFooter className="pt-2 px-3 sm:px-6 flex items-center justify-between">
-          <div className="text-xs text-muted-foreground truncate flex-1 mr-2">{item.source}</div>
-
+          <div className="text-xs text-muted-foreground truncate flex-1 mr-2">
+            {item.source}
+          </div>
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {/* Favorite Button */}
             <Button
@@ -151,17 +152,13 @@ export function ContentCard({ item, className }: ContentCardProps) {
               <Heart className={clsx('h-4 w-4', { 'fill-current': isFavorite })} />
             </Button>
 
-            {/* External Link */}
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="h-8 w-8 p-0"
-              aria-label="Open article"
-            >
-              <a href={item.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-4 w-4" />
-              </a>
+            {/* External Link Button */}
+            <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0" aria-label="Open article">
+              <Slot>
+                <a href={item.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Slot>
             </Button>
           </div>
         </CardFooter>

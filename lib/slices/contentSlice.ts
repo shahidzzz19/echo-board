@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 export interface ContentItem {
   id: string;
-  type: 'news' | 'recommendation' | 'social' | 'search'; // <-- added "search"
+  type: 'news' | 'recommendation' | 'social' | 'search';
   title: string;
   description: string;
   image: string;
@@ -13,7 +13,7 @@ export interface ContentItem {
   trending?: boolean;
 }
 
-interface ContentState {
+export interface ContentState {   // ✅ export this
   items: ContentItem[];
   trendingItems: ContentItem[];
   favoriteItems: ContentItem[];
@@ -37,38 +37,20 @@ const contentSlice = createSlice({
   name: 'content',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload;
-    },
-    setItems: (state, action: PayloadAction<ContentItem[]>) => {
-      state.items = action.payload;
-    },
-    appendItems: (state, action: PayloadAction<ContentItem[]>) => {
-      state.items.push(...action.payload);
-    },
-    setTrendingItems: (state, action: PayloadAction<ContentItem[]>) => {
-      state.trendingItems = action.payload;
-    },
-    updateFavoriteItems: (state, action: PayloadAction<ContentItem[]>) => {
-      state.favoriteItems = action.payload;
-    },
+    setLoading: (state, action: PayloadAction<boolean>) => { state.loading = action.payload; },
+    setError: (state, action: PayloadAction<string | null>) => { state.error = action.payload; },
+    setItems: (state, action: PayloadAction<ContentItem[]>) => { state.items = action.payload; },
+    appendItems: (state, action: PayloadAction<ContentItem[]>) => { state.items.push(...action.payload); },
+    setTrendingItems: (state, action: PayloadAction<ContentItem[]>) => { state.trendingItems = action.payload; },
+    updateFavoriteItems: (state, action: PayloadAction<ContentItem[]>) => { state.favoriteItems = action.payload; },
     reorderItems: (state, action: PayloadAction<{ fromIndex: number; toIndex: number }>) => {
       const { fromIndex, toIndex } = action.payload;
       const [removed] = state.items.splice(fromIndex, 1);
       state.items.splice(toIndex, 0, removed);
     },
-    setHasMore: (state, action: PayloadAction<boolean>) => {
-      state.hasMore = action.payload;
-    },
-    incrementPage: (state) => {
-      state.page += 1;
-    },
-    resetPage: (state) => {
-      state.page = 1;
-    },
+    setHasMore: (state, action: PayloadAction<boolean>) => { state.hasMore = action.payload; },
+    incrementPage: (state) => { state.page += 1; },
+    resetPage: (state) => { state.page = 1; },
   },
 });
 

@@ -5,21 +5,16 @@ import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { useSearchContentQuery } from '@/lib/api/contentApi';
-import { setResults, setLoading, setError } from '@/lib/slices/searchSlice';
 import { ContentCard } from './content-card';
 import { ContentSkeleton } from './content-skeleton';
-
-// Use ContentItem type from contentSlice to ensure compatibility
 import type { ContentItem } from '@/lib/slices/contentSlice';
+import type { UserPreferences } from '@/lib/slices/userSlice';
+import { setResults, setLoading, setError } from '@/lib/slices/searchSlice';
 
-// Optional: define search state type
+// Type for search state
 interface SearchState {
   query: string;
   results: ContentItem[];
-}
-
-interface UserPreferences {
-  layout: 'grid' | 'list';
 }
 
 // Type for search query args with optional filters
@@ -31,24 +26,26 @@ type SearchQueryArgs = {
 export function SearchResults() {
   const dispatch = useAppDispatch();
 
-  const { query, results } = useAppSelector((state: any) => state.search as SearchState);
+  const { query, results } = useAppSelector(
+    (state: any) => state.search as SearchState
+  );
   const { preferences } = useAppSelector(
-    (state: any) => state.user as { preferences: UserPreferences },
+    (state: any) => state.user as { preferences: UserPreferences }
   );
 
-  // Call RTK Query endpoint with optional filters
+  // RTK Query hook
   const { data, isLoading, error } = useSearchContentQuery({ query } as SearchQueryArgs, {
     skip: !query.trim(),
   });
 
-  // Update Redux results
+  // Update results in Redux
   useEffect(() => {
     if (data) {
       dispatch(setResults(data as ContentItem[]));
     }
   }, [data, dispatch]);
 
-  // Update loading and error
+  // Update loading and error state
   useEffect(() => {
     dispatch(setLoading(isLoading));
     if (error) {
@@ -75,7 +72,9 @@ export function SearchResults() {
           <h2 className="text-2xl font-bold">Searching for "{query}"</h2>
         </div>
         <div
-          className={`grid gap-6 ${preferences.layout === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}
+          className={`grid gap-6 ${
+            preferences.layout === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+          }`}
         >
           {Array.from({ length: 6 }).map((_, i) => (
             <ContentSkeleton key={i} />
