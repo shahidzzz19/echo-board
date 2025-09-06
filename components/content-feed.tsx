@@ -4,13 +4,7 @@ import React, { useEffect, useCallback, useMemo } from "react"
 import useSWRInfinite from "swr/infinite"
 import { motion } from "framer-motion"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import {
-  setItems,
-  appendItems,
-  setLoading,
-  setError,
-  ContentItem,
-} from "@/lib/slices/contentSlice"
+import { setItems, appendItems, setLoading, setError, ContentItem } from "@/lib/slices/contentSlice"
 import { ContentSkeleton } from "./content-skeleton"
 import { DraggableContentCard } from "./draggable-content-card"
 import { useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll"
@@ -28,9 +22,7 @@ export function ContentFeed() {
     return `/api/trending?page=${pageIndex + 1}&categories=${preferences.categories.join(",")}`
   }
 
-  const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<
-    ContentItem[]
-  >(getKey, fetcher)
+  const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<ContentItem[]>(getKey, fetcher)
 
   const flatItems = useMemo(() => {
     if (!data) return []
@@ -66,9 +58,7 @@ export function ContentFeed() {
         <h2 className="text-2xl font-bold">Your Personalized Feed</h2>
         <div
           className={`grid gap-6 ${
-            preferences.layout === "grid"
-              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-              : "grid-cols-1"
+            preferences.layout === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
           }`}
         >
           {Array.from({ length: 6 }).map((_, i) => (
@@ -88,9 +78,7 @@ export function ContentFeed() {
 
       <motion.div
         className={`grid gap-3 sm:gap-4 lg:gap-6 ${
-          preferences.layout === "grid"
-            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
-            : "grid-cols-1"
+          preferences.layout === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"
         }`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -110,9 +98,7 @@ export function ContentFeed() {
       )}
 
       {!isLoading && !isValidating && items.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          No items found for your preferences.
-        </div>
+        <div className="text-center py-8 text-muted-foreground">No items found for your preferences.</div>
       )}
     </div>
   )

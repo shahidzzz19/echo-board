@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 export interface ContentItem {
   id: string
-  type: "news" | "recommendation" | "social" | "search"  // <-- added "search"
+  type: "news" | "recommendation" | "social" | "search" // <-- added "search"
   title: string
   description: string
   image: string

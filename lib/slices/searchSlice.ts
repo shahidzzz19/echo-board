@@ -60,14 +60,7 @@ const searchSlice = createSlice({
 })
 
 // Export actions
-export const {
-  setQuery,
-  setResults,
-  setLoading,
-  setError,
-  updateFilters,
-  clearSearch,
-} = searchSlice.actions
+export const { setQuery, setResults, setLoading, setError, updateFilters, clearSearch } = searchSlice.actions
 
 // Export reducer
 export default searchSlice.reducer

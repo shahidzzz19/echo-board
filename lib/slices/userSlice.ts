@@ -25,7 +25,7 @@ const initialState: UserState = {
     language: "en",
     darkMode: false,
     layout: "grid",
-    hashtag: ""
+    hashtag: "",
   },
   favorites: [],
   isAuthenticated: false,

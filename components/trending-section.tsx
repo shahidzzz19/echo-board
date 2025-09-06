@@ -25,26 +25,16 @@ export function TrendingSection() {
   }, [])
 
   if (loading) {
-    return (
-      <p className="text-center text-gray-500">
-        Loading trending content...
-      </p>
-    )
+    return <p className="text-center text-gray-500">Loading trending content...</p>
   }
 
   if (!items.length) {
-    return (
-      <p className="text-center text-gray-500">
-        No trending content available.
-      </p>
-    )
+    return <p className="text-center text-gray-500">No trending content available.</p>
   }
 
   return (
     <section>
-      <h2 className="text-xl font-bold mb-4">
-        {"🔥 Your Personalized Feed"}
-      </h2>
+      <h2 className="text-xl font-bold mb-4">{"🔥 Your Personalized Feed"}</h2>
       <PersonalizedFeed items={items} />
     </section>
   )

@@ -28,7 +28,7 @@ const generateMockContent = (types: ("news" | "recommendation" | "social")[], co
       publishedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
       source: sources[type][Math.floor(Math.random() * sources[type].length)],
       trending: Math.random() > 0.7,
-    }))
+    })),
   )
 }
 
@@ -47,15 +47,23 @@ export const contentApi = createApi({
 
         try {
           const [newsRes, recRes, socialRes] = await Promise.all([
-            fetch(`/api/news?category=${categories[0] || "technology"}&page=${page}&pageSize=${pageSize}`).then(res => res.json()),
-            fetch(`/api/recommendations?page=${page}&pageSize=${pageSize}`).then(res => res.json()),
-            fetch(`/api/social?hashtag=tech&page=${page}&pageSize=${pageSize}`).then(res => res.json()),
+            fetch(`/api/news?category=${categories[0] || "technology"}&page=${page}&pageSize=${pageSize}`).then((res) =>
+              res.json(),
+            ),
+            fetch(`/api/recommendations?page=${page}&pageSize=${pageSize}`).then((res) => res.json()),
+            fetch(`/api/social?hashtag=tech&page=${page}&pageSize=${pageSize}`).then((res) => res.json()),
           ])
 
           const mapItems = (res: any[], type: "news" | "recommendation" | "social") =>
             (res || []).map((item, i) => ({ id: `${type}-${page}-${i}`, type, ...item }))
 
-          return { data: [...mapItems(newsRes, "news"), ...mapItems(recRes, "recommendation"), ...mapItems(socialRes, "social")] }
+          return {
+            data: [
+              ...mapItems(newsRes, "news"),
+              ...mapItems(recRes, "recommendation"),
+              ...mapItems(socialRes, "social"),
+            ],
+          }
         } catch (_err) {
           return { error: { status: 500, data: "Failed to fetch content" } }
         }
@@ -72,8 +80,7 @@ export const contentApi = createApi({
 
     // Recommendations
     getRecommendations: builder.query<ContentItem[], { page?: number; pageSize?: number } | void>({
-      query: ({ page = 1, pageSize = 10 } = {}) =>
-        `/api/recommendations?page=${page}&pageSize=${pageSize}`,
+      query: ({ page = 1, pageSize = 10 } = {}) => `/api/recommendations?page=${page}&pageSize=${pageSize}`,
       transformResponse: (response: any, _meta, arg) =>
         USE_MOCK ? generateMockContent(["recommendation"], arg?.pageSize ?? 10) : response,
     }),
@@ -92,7 +99,7 @@ export const contentApi = createApi({
         if (USE_MOCK) return { data: generateMockContent(["news", "recommendation", "social"], 3) }
 
         try {
-          const res = await fetch("/api/trending").then(r => r.json())
+          const res = await fetch("/api/trending").then((r) => r.json())
           return { data: (res || []).filter((item: any) => ["news", "recommendation", "social"].includes(item.type)) }
         } catch (_err) {
           return { error: { status: 500, data: "Failed to fetch trending" } }
@@ -109,7 +116,7 @@ export const contentApi = createApi({
           let filtered = items.filter(
             (item) =>
               item.title.toLowerCase().includes(query.toLowerCase()) ||
-              item.description.toLowerCase().includes(query.toLowerCase())
+              item.description.toLowerCase().includes(query.toLowerCase()),
           )
 
           if (filters?.category?.length) {
@@ -120,7 +127,7 @@ export const contentApi = createApi({
         }
 
         try {
-          const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`).then(r => r.json())
+          const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`).then((r) => r.json())
           return { data: (res || []).filter((item: any) => ["news", "recommendation", "social"].includes(item.type)) }
         } catch (_err) {
           return { error: { status: 500, data: "Failed to search content" } }

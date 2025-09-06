@@ -1,9 +1,9 @@
 // eslint.config.mts
-import tseslint from "typescript-eslint";
-import reactPlugin from "eslint-plugin-react";
-import reactHooksPlugin from "eslint-plugin-react-hooks";
-import prettierPlugin from "eslint-plugin-prettier";
-import nextPlugin from "@next/eslint-plugin-next";
+import tseslint from "typescript-eslint"
+import reactPlugin from "eslint-plugin-react"
+import reactHooksPlugin from "eslint-plugin-react-hooks"
+import prettierPlugin from "eslint-plugin-prettier"
+import nextPlugin from "@next/eslint-plugin-next"
 
 export default [
   {
@@ -46,10 +46,7 @@ export default [
     },
 
     rules: {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "warn",
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
@@ -70,4 +67,4 @@ export default [
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
-];
+]

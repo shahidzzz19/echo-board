@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
-import { ContentItem } from "@/lib/types";
-import { generateId, safeImage } from "@/lib/utils";
+import { NextResponse } from "next/server"
+import { ContentItem } from "@/lib/types"
+import { generateId, safeImage } from "@/lib/utils"
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const page = Number(searchParams.get("page") || 1);
+  const { searchParams } = new URL(req.url)
+  const page = Number(searchParams.get("page") || 1)
 
   try {
     const res = await fetch(
-      `https://api.themoviedb.org/3/trending/all/day?api_key=${process.env.TMDB_API_KEY}&page=${page}`
-    );
-    const data = await res.json();
+      `https://api.themoviedb.org/3/trending/all/day?api_key=${process.env.TMDB_API_KEY}&page=${page}`,
+    )
+    const data = await res.json()
 
     const items: ContentItem[] = (data.results || []).map((m: any) => ({
       id: generateId("rec", m.id),
@@ -22,11 +22,11 @@ export async function GET(req: Request) {
       category: m.media_type || "entertainment",
       publishedAt: m.release_date || m.first_air_date || new Date().toISOString(),
       source: "TMDB",
-    }));
+    }))
 
-    return NextResponse.json(items);
+    return NextResponse.json(items)
   } catch (err) {
-    console.error("Recommendations fetch error:", err);
-    return NextResponse.json({ error: "Failed to fetch recommendations" }, { status: 500 });
+    console.error("Recommendations fetch error:", err)
+    return NextResponse.json({ error: "Failed to fetch recommendations" }, { status: 500 })
   }
 }

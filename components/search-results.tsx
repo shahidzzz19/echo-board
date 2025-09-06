@@ -35,10 +35,7 @@ export function SearchResults() {
   const { preferences } = useAppSelector((state: any) => state.user as { preferences: UserPreferences })
 
   // Call RTK Query endpoint with optional filters
-  const { data, isLoading, error } = useSearchContentQuery(
-    { query } as SearchQueryArgs,
-    { skip: !query.trim() }
-  )
+  const { data, isLoading, error } = useSearchContentQuery({ query } as SearchQueryArgs, { skip: !query.trim() })
 
   // Update Redux results
   useEffect(() => {
@@ -98,9 +95,7 @@ export function SearchResults() {
       {results.length > 0 ? (
         <motion.div
           className={`grid gap-3 sm:gap-4 lg:gap-6 ${
-            preferences.layout === "grid"
-              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
-              : "grid-cols-1"
+            preferences.layout === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"
           }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

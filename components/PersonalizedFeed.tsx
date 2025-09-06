@@ -23,37 +23,20 @@ export function PersonalizedFeed({ items }: { items: FeedItem[] }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition"
-            >
+            <div key={item.id} className="bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition">
               {/* Image with fallback */}
               <div className="relative h-48 w-full bg-gray-200">
                 {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt={item.title || "Feed image"}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
+                  <Image src={item.image} alt={item.title || "Feed image"} fill className="object-cover" unoptimized />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-                    No image
-                  </div>
+                  <div className="flex items-center justify-center h-full text-gray-500 text-sm">No image</div>
                 )}
               </div>
 
               {/* Content */}
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-1 line-clamp-2">
-                  {item.title}
-                </h3>
-                {item.description && (
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-3">
-                    {item.description}
-                  </p>
-                )}
+                <h3 className="text-lg font-semibold mb-1 line-clamp-2">{item.title}</h3>
+                {item.description && <p className="text-sm text-gray-600 mb-2 line-clamp-3">{item.description}</p>}
 
                 <div className="flex justify-between items-center text-xs text-gray-500">
                   <span>{item.source || "Unknown source"}</span>

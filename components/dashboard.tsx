@@ -12,7 +12,7 @@ import { FavoritesSection } from "./favorites-section"
 import { SearchResults } from "./search-results"
 import { UserPreferencesModal } from "./user-preferences-modal"
 import { useAppSelector } from "@/lib/hooks"
-import React from 'react';
+import React from "react"
 
 export function Dashboard() {
   const [activeSection, setActiveSection] = useState<"feed" | "trending" | "favorites" | "search">("feed")
@@ -38,10 +38,7 @@ export function Dashboard() {
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Mobile backdrop */}
         {isMobileSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setIsMobileSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsMobileSidebarOpen(false)} />
         )}
 
         {/* Sidebar */}

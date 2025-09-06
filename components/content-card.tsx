@@ -11,7 +11,7 @@ import type { ContentItem } from "@/lib/slices/contentSlice"
 import Image from "next/image"
 import clsx from "clsx"
 import { useState } from "react"
-import React from 'react';
+import React from "react"
 
 interface ContentCardProps {
   item: ContentItem
@@ -73,11 +73,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
   const imageUrl = !imgError && item.image ? item.image : "/placeholder.svg"
 
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-      className={clsx("h-full", className)}
-    >
+    <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }} className={clsx("h-full", className)}>
       <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
         {/* Image */}
         <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
@@ -101,9 +97,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
           {/* Type Badge */}
           <div className="absolute top-2 left-2">
-            <Badge className={`${getTypeColor(item.type)} text-white text-xs`}>
-              {item.type}
-            </Badge>
+            <Badge className={`${getTypeColor(item.type)} text-white text-xs`}>{item.type}</Badge>
           </div>
 
           {/* Trending Badge */}
@@ -118,16 +112,12 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
         {/* Title */}
         <CardHeader className="pb-2 px-3 sm:px-6">
-          <h3 className="font-semibold line-clamp-2 text-sm sm:text-base leading-tight">
-            {item.title}
-          </h3>
+          <h3 className="font-semibold line-clamp-2 text-sm sm:text-base leading-tight">{item.title}</h3>
         </CardHeader>
 
         {/* Description + Metadata */}
         <CardContent className="flex-1 pb-2 px-3 sm:px-6">
-          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 mb-3">
-            {item.description}
-          </p>
+          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 mb-3">{item.description}</p>
 
           <div className="flex items-center gap-1 sm:gap-2 text-xs text-muted-foreground flex-wrap">
             <Tag className="h-3 w-3 flex-shrink-0" />
@@ -139,9 +129,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
         {/* Footer: Source + Actions */}
         <CardFooter className="pt-2 px-3 sm:px-6 flex items-center justify-between">
-          <div className="text-xs text-muted-foreground truncate flex-1 mr-2">
-            {item.source}
-          </div>
+          <div className="text-xs text-muted-foreground truncate flex-1 mr-2">{item.source}</div>
 
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {/* Favorite Button */}
@@ -156,13 +144,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
             </Button>
 
             {/* External Link */}
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="h-8 w-8 p-0"
-              aria-label="Open article"
-            >
+            <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0" aria-label="Open article">
               <a href={item.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4" />
               </a>
