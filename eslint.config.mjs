@@ -1,70 +1,38 @@
-// eslint.config.mts
-import tseslint from "typescript-eslint"
-import reactPlugin from "eslint-plugin-react"
-import reactHooksPlugin from "eslint-plugin-react-hooks"
-import prettierPlugin from "eslint-plugin-prettier"
-import nextPlugin from "@next/eslint-plugin-next"
+// eslint.config.mjs
+import js from "@eslint/js";
+import nextPlugin from "@next/eslint-plugin-next";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactPlugin from "eslint-plugin-react";
+import prettier from "eslint-plugin-prettier";
 
 export default [
+  js.configs.recommended,
+  tsPlugin.configs.recommended,
+  nextPlugin.configs.recommended,
   {
-    root: true,
-    ignores: ["node_modules", ".next", "dist", "build", "out"],
-
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooks,
+      prettier,
+    },
+    rules: {
+      "prettier/prettier": "error",
+      "react/react-in-jsx-scope": "off",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+    },
     languageOptions: {
-      parser: tseslint.parser,
+      parser: tsParser,
       parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        ecmaFeatures: {
-          jsx: true,
-        },
         project: "./tsconfig.json",
       },
     },
-
-    plugins: {
-      "@typescript-eslint": tseslint.plugin,
-      react: reactPlugin,
-      "react-hooks": reactHooksPlugin,
-      prettier: prettierPlugin,
-      next: nextPlugin,
-    },
-
-    extends: [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:prettier/recommended",
-      "next/core-web-vitals",
-    ],
-
     settings: {
       react: {
         version: "detect",
       },
     },
-
-    rules: {
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      "@typescript-eslint/no-explicit-any": "warn",
-      "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off",
-      "react-hooks/exhaustive-deps": "error",
-      "prefer-const": "error",
-      "no-var": "error",
-      "prettier/prettier": "warn",
-    },
   },
-  {
-    files: ["**/__tests__/**/*", "**/*.test.*"],
-    languageOptions: {
-      globals: {
-        jest: true,
-      },
-    },
-    rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
-]
+];
