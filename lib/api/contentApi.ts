@@ -1,176 +1,110 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { ContentItem } from '../slices/contentSlice';
+import { generateId, safeImage } from '../utils';
 
-type SearchFilters = {
-  category?: string[];
-};
+const NEWS_API_KEY = process.env.NEWS_API_KEY;
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-
-// Centralized mock generator
-const generateMockContent = (
-  types: ('news' | 'recommendation' | 'social')[],
-  countPerType = 10,
-): ContentItem[] => {
-  const categories = ['technology', 'sports', 'finance', 'entertainment', 'health', 'science'];
-  const sources = {
-    news: ['TechCrunch', 'BBC News', 'Reuters', 'CNN'],
-    recommendation: ['Netflix', 'Spotify', 'Amazon Prime', 'YouTube'],
-    social: ['Twitter', 'Instagram', 'LinkedIn', 'Facebook'],
-  };
-
-  return types.flatMap((type) =>
-    Array.from({ length: countPerType }, (_, i) => ({
-      id: `${type}-${Date.now()}-${i}`,
-      type,
-      title: `${type === 'news' ? 'Breaking:' : type === 'recommendation' ? 'Recommended:' : 'Trending:'} Sample ${type} ${i + 1}`,
-      description: `This is a sample ${type} description.`,
-      image: `/placeholder.svg?height=200&width=300&text=${type}`,
-      url: `#${type}-${i}`,
-      category: categories[Math.floor(Math.random() * categories.length)],
-      publishedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      source: sources[type][Math.floor(Math.random() * sources[type].length)],
-      trending: Math.random() > 0.7,
-    })),
-  );
-};
+interface SearchQueryArgs {
+  query: string;
+  filters?: { category?: string[] };
+}
 
 export const contentApi = createApi({
   reducerPath: 'contentApi',
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
-  tagTypes: ['Content', 'Trending', 'Search'],
   endpoints: (builder) => ({
-    // Personalized feed
-    getPersonalizedContent: builder.query<
-      ContentItem[],
-      { categories: string[]; page: number; pageSize?: number }
-    >({
-      queryFn: async ({ categories, page, pageSize = 10 }) => {
-        if (USE_MOCK) {
-          const items = generateMockContent(['news', 'recommendation', 'social'], pageSize);
-          return {
-            data: categories.length
-              ? items.filter((item) => categories.includes(item.category))
-              : items,
-          };
-        }
+    searchContent: builder.query<ContentItem[], SearchQueryArgs>({
+      async queryFn({ query }) {
+        if (!query.trim()) return { data: [] };
 
         try {
-          const [newsRes, recRes, socialRes] = await Promise.all([
-            fetch(
-              `/api/news?category=${categories[0] || 'technology'}&page=${page}&pageSize=${pageSize}`,
-            ).then((res) => res.json()),
-            fetch(`/api/recommendations?page=${page}&pageSize=${pageSize}`).then((res) =>
-              res.json(),
-            ),
-            fetch(`/api/social?hashtag=tech&page=${page}&pageSize=${pageSize}`).then((res) =>
-              res.json(),
-            ),
-          ]);
-
-          const mapItems = (res: any[], type: 'news' | 'recommendation' | 'social') =>
-            (res || []).map((item, i) => ({ id: `${type}-${page}-${i}`, type, ...item }));
-
-          return {
-            data: [
-              ...mapItems(newsRes, 'news'),
-              ...mapItems(recRes, 'recommendation'),
-              ...mapItems(socialRes, 'social'),
-            ],
-          };
-        } catch (_err) {
-          return { error: { status: 500, data: 'Failed to fetch content' } };
-        }
-      },
-    }),
-
-    // News
-    getNews: builder.query<ContentItem[], { category: string; page?: number; pageSize?: number }>({
-      query: ({ category, page = 1, pageSize = 10 }) =>
-        `/api/news?category=${category}&page=${page}&pageSize=${pageSize}`,
-      transformResponse: (response: any, _meta, arg) =>
-        USE_MOCK ? generateMockContent(['news'], arg.pageSize ?? 10) : response,
-    }),
-
-    // Recommendations
-    getRecommendations: builder.query<ContentItem[], { page?: number; pageSize?: number } | void>({
-      query: ({ page = 1, pageSize = 10 } = {}) =>
-        `/api/recommendations?page=${page}&pageSize=${pageSize}`,
-      transformResponse: (response: any, _meta, arg) =>
-        USE_MOCK ? generateMockContent(['recommendation'], arg?.pageSize ?? 10) : response,
-    }),
-
-    // Social
-    getSocialPosts: builder.query<
-      ContentItem[],
-      { hashtag: string; page?: number; pageSize?: number }
-    >({
-      query: ({ hashtag, page = 1, pageSize = 10 }) =>
-        `/api/social?hashtag=${hashtag}&page=${page}&pageSize=${pageSize}`,
-      transformResponse: (response: any, _meta, arg) =>
-        USE_MOCK ? generateMockContent(['social'], arg.pageSize ?? 10) : response,
-    }),
-
-    // Trending
-    getTrendingContent: builder.query<ContentItem[], void>({
-      queryFn: async () => {
-        if (USE_MOCK) return { data: generateMockContent(['news', 'recommendation', 'social'], 3) };
-
-        try {
-          const res = await fetch('/api/trending').then((r) => r.json());
-          return {
-            data: (res || []).filter((item: any) =>
-              ['news', 'recommendation', 'social'].includes(item.type),
-            ),
-          };
-        } catch (_err) {
-          return { error: { status: 500, data: 'Failed to fetch trending' } };
-        }
-      },
-      providesTags: ['Trending'],
-    }),
-
-    // Search with optional filters
-    searchContent: builder.query<ContentItem[], { query: string; filters?: SearchFilters }>({
-      queryFn: async ({ query, filters }) => {
-        if (USE_MOCK) {
-          let items = generateMockContent(['news', 'recommendation', 'social'], 12);
-          let filtered = items.filter(
-            (item) =>
-              item.title.toLowerCase().includes(query.toLowerCase()) ||
-              item.description.toLowerCase().includes(query.toLowerCase()),
-          );
-
-          if (filters?.category?.length) {
-            filtered = filtered.filter((item) => filters.category!.includes(item.category));
+          // News
+          let newsData: any = { articles: [] };
+          try {
+            const newsRes = await fetch(
+              `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=5&apiKey=${NEWS_API_KEY}`
+            );
+            if (newsRes.ok) newsData = await newsRes.json();
+          } catch (err) {
+            console.error('News fetch failed:', err);
           }
 
-          return { data: filtered };
-        }
+          // TMDB
+          let tmdbData: any = { results: [] };
+          try {
+            const tmdbRes = await fetch(
+              `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&api_key=${TMDB_API_KEY}&page=1`
+            );
+            if (tmdbRes.ok) tmdbData = await tmdbRes.json();
+          } catch (err) {
+            console.error('TMDB fetch failed:', err);
+          }
 
-        try {
-          const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`).then((r) =>
-            r.json(),
-          );
-          return {
-            data: (res || []).filter((item: any) =>
-              ['news', 'recommendation', 'social'].includes(item.type),
-            ),
-          };
-        } catch (_err) {
-          return { error: { status: 500, data: 'Failed to search content' } };
+          // Reddit
+          let redditData: any = { data: { children: [] } };
+          try {
+            const redditRes = await fetch(
+              `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&limit=5`
+            );
+            if (redditRes.ok) redditData = await redditRes.json();
+          } catch (err) {
+            console.error('Reddit fetch failed:', err);
+          }
+
+          const newsItems: ContentItem[] = (newsData.articles || []).map((a: any, i: number) => ({
+            id: generateId('news', i),
+            type: 'news',
+            title: a.title || 'No title',
+            description: a.description || null,
+            url: a.url,
+            image: safeImage(a.urlToImage),
+            category: 'news',
+            publishedAt: a.publishedAt || new Date().toISOString(),
+            source: a.source?.name || 'Unknown',
+            trending: true,
+          }));
+
+          const recItems: ContentItem[] = (tmdbData.results || [])
+            .slice(0, 5)
+            .map((m: any) => ({
+              id: generateId('rec', m.id),
+              type: 'recommendation',
+              title: m.title || m.name || 'No title',
+              description: m.overview || null,
+              url: m.media_type
+                ? `https://www.themoviedb.org/${m.media_type}/${m.id}`
+                : 'https://www.themoviedb.org/',
+              image: safeImage(m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null),
+              category: 'entertainment',
+              publishedAt: m.release_date || m.first_air_date || new Date().toISOString(),
+              source: 'TMDB',
+              trending: true,
+            }));
+
+          const socialItems: ContentItem[] = (redditData.data.children || []).map((post: any) => ({
+            id: generateId('social', post.data.id),
+            type: 'social',
+            title: post.data.title || 'No title',
+            description: post.data.selftext || null,
+            url: `https://reddit.com${post.data.permalink}`,
+            image: safeImage(post.data.thumbnail),
+            category: 'social',
+            publishedAt: new Date(post.data.created_utc * 1000).toISOString(),
+            source: 'Reddit',
+            trending: true,
+          }));
+
+          // Combine all results
+          const allResults = [...newsItems, ...recItems, ...socialItems];
+          return { data: allResults };
+        } catch (err) {
+          console.error('Search fetch failed:', err);
+          return { error: { status: 'FETCH_ERROR', error: 'Failed to fetch search results' } };
         }
       },
-      providesTags: ['Search'],
     }),
   }),
 });
 
-export const {
-  useGetPersonalizedContentQuery,
-  useGetNewsQuery,
-  useGetRecommendationsQuery,
-  useGetSocialPostsQuery,
-  useGetTrendingContentQuery,
-  useSearchContentQuery,
-} = contentApi;
+export const { useSearchContentQuery } = contentApi;

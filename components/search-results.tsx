@@ -17,7 +17,7 @@ interface SearchState {
   results: ContentItem[];
 }
 
-// Type for search query args with optional filters
+// Type for search query args
 type SearchQueryArgs = {
   query: string;
   filters?: { category?: string[] };
@@ -34,23 +34,25 @@ export function SearchResults() {
   );
 
   // RTK Query hook
-  const { data, isLoading, error } = useSearchContentQuery({ query } as SearchQueryArgs, {
-    skip: !query.trim(),
-  });
+  const { data, isLoading, error } = useSearchContentQuery(
+    { query } as SearchQueryArgs,
+    {
+      skip: !query.trim(),
+      refetchOnMountOrArgChange: true, // ensure fresh data each search
+    }
+  );
 
-  // Update results in Redux
+  // Update Redux state with search results
   useEffect(() => {
     if (data) {
       dispatch(setResults(data as ContentItem[]));
     }
   }, [data, dispatch]);
 
-  // Update loading and error state
+  // Update loading and error states
   useEffect(() => {
     dispatch(setLoading(isLoading));
-    if (error) {
-      dispatch(setError('Failed to search content'));
-    }
+    dispatch(setError(error ? 'Failed to fetch search results' : ''));
   }, [isLoading, error, dispatch]);
 
   // No query UI
@@ -73,7 +75,9 @@ export function SearchResults() {
         </div>
         <div
           className={`grid gap-6 ${
-            preferences.layout === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+            preferences.layout === 'grid'
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              : 'grid-cols-1'
           }`}
         >
           {Array.from({ length: 6 }).map((_, i) => (
@@ -92,7 +96,9 @@ export function SearchResults() {
           <Search className="h-6 w-6 text-primary" />
           <h2 className="text-2xl font-bold">Search Results for "{query}"</h2>
         </div>
-        <div className="text-sm text-muted-foreground">{results.length} results found</div>
+        <div className="text-sm text-muted-foreground">
+          {results.length} results found
+        </div>
       </div>
 
       {results.length > 0 ? (

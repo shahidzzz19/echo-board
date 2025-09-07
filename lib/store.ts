@@ -1,57 +1,49 @@
 // lib/store.ts
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // localStorage for browser
-
-// Import your slice reducers
+import storage from 'redux-persist/lib/storage';
 import contentReducer from './slices/contentSlice';
 import userReducer from './slices/userSlice';
 import searchReducer from './slices/searchSlice';
+import { contentApi } from './api/contentApi'; // RTK Query API slice
 
-// ✅ Custom noop storage for SSR
-const createNoopStorage = () => {
-  return {
-    getItem(_key: string) {
-      return Promise.resolve(null);
-    },
-    setItem(_key: string, value: string) {
-      return Promise.resolve(value);
-    },
-    removeItem(_key: string) {
-      return Promise.resolve();
-    },
-  };
-};
+// ✅ SSR-safe storage
+const createNoopStorage = () => ({
+  getItem: (_key: string) => Promise.resolve(null),
+  setItem: (_key: string, value: string) => Promise.resolve(value),
+  removeItem: (_key: string) => Promise.resolve(),
+});
 
-// 1️⃣ Persist configuration
+// ✅ Persist config
 const persistConfig = {
   key: 'root',
   storage: typeof window !== 'undefined' ? storage : createNoopStorage(),
-  whitelist: ['user'], // persist only user slice
+  whitelist: ['user'], // persist only the user slice
 };
 
-// 2️⃣ Root reducer
+// ✅ Root reducer
 const rootReducer = combineReducers({
   content: contentReducer,
   user: userReducer,
   search: searchReducer,
+  [contentApi.reducerPath]: contentApi.reducer, // include RTK Query reducer
 });
 
-// 3️⃣ Persisted reducer
+// ✅ Persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// 4️⃣ Store configuration
+// ✅ Store
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // disable for redux-persist
-    }),
+      serializableCheck: false, // required for redux-persist
+    }).concat(contentApi.middleware), // add RTK Query middleware
 });
 
-// 5️⃣ Persistor
+// ✅ Persistor
 export const persistor = persistStore(store);
 
-// 6️⃣ Type helpers
+// ✅ Type helpers
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
