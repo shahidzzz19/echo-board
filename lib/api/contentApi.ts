@@ -19,52 +19,58 @@ export const contentApi = createApi({
         if (!query.trim()) return { data: [] };
 
         try {
-          // News
+          // News API
           let newsData: any = { articles: [] };
           try {
             const newsRes = await fetch(
-              `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=5&apiKey=${NEWS_API_KEY}`
+              `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+                query
+              )}&pageSize=5&apiKey=${NEWS_API_KEY}`
             );
             if (newsRes.ok) newsData = await newsRes.json();
           } catch (err) {
             console.error('News fetch failed:', err);
           }
 
-          // TMDB
+          // TMDB API
           let tmdbData: any = { results: [] };
           try {
             const tmdbRes = await fetch(
-              `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&api_key=${TMDB_API_KEY}&page=1`
+              `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(
+                query
+              )}&api_key=${TMDB_API_KEY}&page=1`
             );
             if (tmdbRes.ok) tmdbData = await tmdbRes.json();
           } catch (err) {
             console.error('TMDB fetch failed:', err);
           }
 
-          // Reddit
+          // Reddit API (via proxy route to avoid CORS)
           let redditData: any = { data: { children: [] } };
           try {
-            const redditRes = await fetch(
-              `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&limit=5`
-            );
+            const redditRes = await fetch(`/api/reddit?q=${encodeURIComponent(query)}`);
             if (redditRes.ok) redditData = await redditRes.json();
           } catch (err) {
             console.error('Reddit fetch failed:', err);
           }
 
-          const newsItems: ContentItem[] = (newsData.articles || []).map((a: any, i: number) => ({
-            id: generateId('news', i),
-            type: 'news',
-            title: a.title || 'No title',
-            description: a.description || null,
-            url: a.url,
-            image: safeImage(a.urlToImage),
-            category: 'news',
-            publishedAt: a.publishedAt || new Date().toISOString(),
-            source: a.source?.name || 'Unknown',
-            trending: true,
-          }));
+          // Format News
+          const newsItems: ContentItem[] = (newsData.articles || []).map(
+            (a: any, i: number) => ({
+              id: generateId('news', i),
+              type: 'news',
+              title: a.title || 'No title',
+              description: a.description || null,
+              url: a.url,
+              image: safeImage(a.urlToImage),
+              category: 'news',
+              publishedAt: a.publishedAt || new Date().toISOString(),
+              source: a.source?.name || 'Unknown',
+              trending: true,
+            })
+          );
 
+          // Format TMDB
           const recItems: ContentItem[] = (tmdbData.results || [])
             .slice(0, 5)
             .map((m: any) => ({
@@ -75,32 +81,46 @@ export const contentApi = createApi({
               url: m.media_type
                 ? `https://www.themoviedb.org/${m.media_type}/${m.id}`
                 : 'https://www.themoviedb.org/',
-              image: safeImage(m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null),
+              image: safeImage(
+                m.poster_path
+                  ? `https://image.tmdb.org/t/p/w500${m.poster_path}`
+                  : null
+              ),
               category: 'entertainment',
-              publishedAt: m.release_date || m.first_air_date || new Date().toISOString(),
+              publishedAt:
+                m.release_date || m.first_air_date || new Date().toISOString(),
               source: 'TMDB',
               trending: true,
             }));
 
-          const socialItems: ContentItem[] = (redditData.data.children || []).map((post: any) => ({
-            id: generateId('social', post.data.id),
-            type: 'social',
-            title: post.data.title || 'No title',
-            description: post.data.selftext || null,
-            url: `https://reddit.com${post.data.permalink}`,
-            image: safeImage(post.data.thumbnail),
-            category: 'social',
-            publishedAt: new Date(post.data.created_utc * 1000).toISOString(),
-            source: 'Reddit',
-            trending: true,
-          }));
+          // Format Reddit
+          const socialItems: ContentItem[] = (redditData.data.children || []).map(
+            (post: any) => ({
+              id: generateId('social', post.data.id),
+              type: 'social',
+              title: post.data.title || 'No title',
+              description: post.data.selftext || null,
+              url: `https://reddit.com${post.data.permalink}`,
+              image: safeImage(post.data.thumbnail),
+              category: 'social',
+              publishedAt: new Date(
+                post.data.created_utc * 1000
+              ).toISOString(),
+              source: 'Reddit',
+              trending: true,
+            })
+          );
 
-          // Combine all results
-          const allResults = [...newsItems, ...recItems, ...socialItems];
-          return { data: allResults };
+          // Combine results
+          return { data: [...newsItems, ...recItems, ...socialItems] };
         } catch (err) {
           console.error('Search fetch failed:', err);
-          return { error: { status: 'FETCH_ERROR', error: 'Failed to fetch search results' } };
+          return {
+            error: {
+              status: 'FETCH_ERROR',
+              error: 'Failed to fetch search results',
+            },
+          };
         }
       },
     }),
