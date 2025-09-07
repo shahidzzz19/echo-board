@@ -1,5 +1,6 @@
 import jest from "jest"
 import "@testing-library/jest-dom"
+import "@testing-library/jest-dom/extend-expect";
 
 // Mock next/image
 jest.mock("next/image", () => ({

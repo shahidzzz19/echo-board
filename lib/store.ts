@@ -2,10 +2,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import contentReducer from './slices/contentSlice';
-import userReducer from './slices/userSlice';
-import searchReducer from './slices/searchSlice';
 import { contentApi } from './api/contentApi'; // RTK Query API slice
+import contentReducer from './slices/contentSlice';
+import searchReducer from './slices/searchSlice';
+import userReducer from './slices/userSlice';
 
 // ✅ SSR-safe storage
 const createNoopStorage = () => ({

@@ -1,16 +1,16 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { useState } from 'react';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { motion } from 'framer-motion';
-import React from 'react';
-import { Sidebar } from './sidebar';
-import { Header } from './header';
 import { ContentFeed } from './content-feed';
-import { TrendingSection } from './trending-section';
 import { FavoritesSection } from './favorites-section';
+import { Header } from './header';
 import { SearchResults } from './search-results';
+import { Sidebar } from './sidebar';
+import { TrendingSection } from './trending-section';
 import { UserPreferencesModal } from './user-preferences-modal';
 import { useAppSelector } from '@/lib/hooks';
 

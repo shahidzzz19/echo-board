@@ -8,7 +8,8 @@ export interface UserPreferences {
   layout: 'grid' | 'list';
 }
 
-export interface UserState {   // ✅ export this
+export interface UserState {
+  // ✅ export this
   preferences: UserPreferences;
   favorites: string[];
   isAuthenticated: boolean;
@@ -16,7 +17,13 @@ export interface UserState {   // ✅ export this
 }
 
 const initialState: UserState = {
-  preferences: { categories: ['technology','sports'], language: 'en', darkMode: false, layout: 'grid', hashtag: '' },
+  preferences: {
+    categories: ['technology', 'sports'],
+    language: 'en',
+    darkMode: false,
+    layout: 'grid',
+    hashtag: '',
+  },
   favorites: [],
   isAuthenticated: false,
   profile: null,
@@ -31,12 +38,17 @@ const userSlice = createSlice({
     },
     toggleFavorite: (state, action: PayloadAction<string>) => {
       const idx = state.favorites.indexOf(action.payload);
-      idx > -1 ? state.favorites.splice(idx,1) : state.favorites.push(action.payload);
+      idx > -1 ? state.favorites.splice(idx, 1) : state.favorites.push(action.payload);
     },
-    setAuthenticated: (state, action: PayloadAction<boolean>) => { state.isAuthenticated = action.payload; },
-    setProfile: (state, action: PayloadAction<UserState['profile']>) => { state.profile = action.payload; },
+    setAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
+    setProfile: (state, action: PayloadAction<UserState['profile']>) => {
+      state.profile = action.payload;
+    },
   },
 });
 
-export const { updatePreferences, toggleFavorite, setAuthenticated, setProfile } = userSlice.actions;
+export const { updatePreferences, toggleFavorite, setAuthenticated, setProfile } =
+  userSlice.actions;
 export default userSlice.reducer;

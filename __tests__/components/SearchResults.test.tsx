@@ -1,11 +1,11 @@
-import type React from 'react';
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { render, screen } from '@testing-library/react';
+import type React from 'react';
+import { Provider } from 'react-redux';
 import { SearchResults } from '@/components/search-results';
+import { contentApi } from '@/lib/api/contentApi';
 import searchSlice from '@/lib/slices/searchSlice';
 import userSlice from '@/lib/slices/userSlice';
-import { contentApi } from '@/lib/api/contentApi';
 
 const mockStore = configureStore({
   reducer: {

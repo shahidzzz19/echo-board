@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { Grid, List } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { updatePreferences } from '@/lib/slices/userSlice';

@@ -1,15 +1,15 @@
 'use client';
 
+import { Search, Settings, Bell, User, Menu } from 'lucide-react';
 import type React from 'react';
 
 import { useState, useCallback } from 'react';
-import { Search, Settings, Bell, User, Menu } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { setQuery } from '@/lib/slices/searchSlice';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { setQuery } from '@/lib/slices/searchSlice';
 
 interface HeaderProps {
   onOpenPreferences: () => void;
@@ -21,12 +21,15 @@ export function Header({ onOpenPreferences, onToggleMobileSidebar }: HeaderProps
   const [searchInput, setSearchInput] = useState('');
   const profile = useAppSelector((state) => state.user.profile);
 
-  // Debounced search
-  const debouncedSearch = useCallback(
-    useDebounce((query: string) => {
-      dispatch(setQuery(query));
-    }, 300),
-    [dispatch],
+  // Memoize debounced search callback
+  const debouncedSearch = useDebounce(
+    useCallback(
+      (query: string) => {
+        dispatch(setQuery(query));
+      },
+      [dispatch], // only re-create if dispatch changes
+    ),
+    300,
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,15 +42,17 @@ export function Header({ onOpenPreferences, onToggleMobileSidebar }: HeaderProps
     <header className="h-14 sm:h-16 border-b border-border bg-card px-3 sm:px-4 lg:px-6 flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-4 flex-1 max-w-md">
         {/* Mobile menu button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden h-8 w-8"
-          onClick={onToggleMobileSidebar}
-          aria-label="Toggle menu"
-        >
-          <Menu className="h-4 w-4" />
-        </Button>
+        {onToggleMobileSidebar && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden h-8 w-8"
+            onClick={onToggleMobileSidebar}
+            aria-label="Toggle menu"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+        )}
 
         <div className="relative w-full">
           <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3 sm:h-4 sm:w-4" />

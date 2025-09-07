@@ -36,11 +36,5 @@
     "__tests__/**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "dist",
-    "coverage",
-    "build"
-  ]
+  "exclude": ["node_modules", ".next", "dist", "coverage", "build"]
 }

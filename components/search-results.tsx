@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '@/lib/hooks';
-import { useSearchContentQuery } from '@/lib/api/contentApi';
+import { useEffect } from 'react';
 import { ContentCard } from './content-card';
 import { ContentSkeleton } from './content-skeleton';
+import { useSearchContentQuery } from '@/lib/api/contentApi';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import type { ContentItem } from '@/lib/slices/contentSlice';
-import type { UserPreferences } from '@/lib/slices/userSlice';
 import { setResults, setLoading, setError } from '@/lib/slices/searchSlice';
+import type { UserPreferences } from '@/lib/slices/userSlice';
 
 // Type for search state
 interface SearchState {
@@ -26,21 +26,16 @@ type SearchQueryArgs = {
 export function SearchResults() {
   const dispatch = useAppDispatch();
 
-  const { query, results } = useAppSelector(
-    (state: any) => state.search as SearchState
-  );
+  const { query, results } = useAppSelector((state: any) => state.search as SearchState);
   const { preferences } = useAppSelector(
-    (state: any) => state.user as { preferences: UserPreferences }
+    (state: any) => state.user as { preferences: UserPreferences },
   );
 
   // RTK Query hook
-  const { data, isLoading, error } = useSearchContentQuery(
-    { query } as SearchQueryArgs,
-    {
-      skip: !query.trim(),
-      refetchOnMountOrArgChange: true, // ensure fresh data each search
-    }
-  );
+  const { data, isLoading, error } = useSearchContentQuery({ query } as SearchQueryArgs, {
+    skip: !query.trim(),
+    refetchOnMountOrArgChange: true, // ensure fresh data each search
+  });
 
   // Update Redux state with search results
   useEffect(() => {
@@ -96,9 +91,7 @@ export function SearchResults() {
           <Search className="h-6 w-6 text-primary" />
           <h2 className="text-2xl font-bold">Search Results for "{query}"</h2>
         </div>
-        <div className="text-sm text-muted-foreground">
-          {results.length} results found
-        </div>
+        <div className="text-sm text-muted-foreground">{results.length} results found</div>
       </div>
 
       {results.length > 0 ? (

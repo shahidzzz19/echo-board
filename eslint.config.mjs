@@ -10,7 +10,18 @@ import nextPlugin from "@next/eslint-plugin-next";
 
 export default [
   {
-    ignores: ["node_modules/**", ".next/**", "dist/**"],
+    // ✅ Ignored globally (outside "files")
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "dist/**",
+      "jest.config.js",
+      "jest.setup.js",
+      "prettier.config.js",
+    ],
+  },
+  {
+    files: ["**/*.{ts,tsx,js,jsx}"],
 
     languageOptions: {
       parser: tsParser,
@@ -18,7 +29,7 @@ export default [
         ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: { jsx: true },
-        project: ["./tsconfig.json"], // only TypeScript files included
+        project: ["./tsconfig.json"],
       },
       globals: {
         window: "readonly",
@@ -43,8 +54,14 @@ export default [
 
     rules: {
       "react/react-in-jsx-scope": "off",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "import/order": ["warn", { groups: ["builtin", "external", "internal"] }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
+      "import/order": [
+        "warn",
+        { groups: ["builtin", "external", "internal"] },
+      ],
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "prettier/prettier": [
@@ -57,13 +74,11 @@ export default [
           trailingComma: "all",
         },
       ],
-      "@next/next/no-html-link-for-pages": ["error", "app"], // enforce Next.js linking rules
+      "@next/next/no-html-link-for-pages": ["error", "app"],
     },
 
     settings: {
       react: { version: "detect" },
     },
-
-    files: ["**/*.{ts,tsx,js,jsx}"], // only lint these files
   },
 ];

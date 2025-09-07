@@ -8,13 +8,15 @@ export async function GET(req: Request) {
   try {
     const redditRes = await fetch(
       `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&limit=5`,
-      { headers: { 'User-Agent': 'EchoBoardApp/1.0' } }
+      {
+        headers: { 'User-Agent': 'EchoBoardApp/1.0' },
+      },
     );
 
     if (!redditRes.ok) {
       return NextResponse.json(
         { error: 'Failed to fetch from Reddit' },
-        { status: redditRes.status }
+        { status: redditRes.status },
       );
     }
 
@@ -22,9 +24,6 @@ export async function GET(req: Request) {
     return NextResponse.json(data);
   } catch (err) {
     console.error('Reddit API error:', err);
-    return NextResponse.json(
-      { error: 'Reddit fetch failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Reddit fetch failed' }, { status: 500 });
   }
 }

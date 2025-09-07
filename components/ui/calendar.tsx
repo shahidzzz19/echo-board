@@ -1,11 +1,11 @@
 'use client';
 
-import * as React from 'react';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import * as React from 'react';
 import { DayPicker } from 'react-day-picker';
 
-import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>['variant'];
@@ -32,17 +32,14 @@ function Calendar({
         className,
       )}
       formatters={{
-        formatMonthDropdown: (date) =>
-          date.toLocaleString('default', { month: 'short' }),
+        formatMonthDropdown: (date) => date.toLocaleString('default', { month: 'short' }),
         ...formatters,
       }}
       classNames={{
         root: cn('w-fit'),
         months: cn('flex gap-4 flex-col md:flex-row relative'),
         month: cn('flex flex-col w-full gap-4'),
-        nav: cn(
-          'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between',
-        ),
+        nav: cn('flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between'),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
           'size-[--cell-size] aria-disabled:opacity-50 p-0 select-none',
@@ -68,18 +65,10 @@ function Calendar({
           'text-muted-foreground rounded-md flex-1 font-normal text-[0.8rem] select-none',
         ),
         week: cn('flex w-full mt-2'),
-        week_number: cn(
-          'text-[0.8rem] select-none text-muted-foreground',
-        ),
-        day: cn(
-          'relative w-full h-full p-0 text-center group/day aspect-square select-none',
-        ),
-        today: cn(
-          'bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none',
-        ),
-        outside: cn(
-          'text-muted-foreground aria-selected:text-muted-foreground',
-        ),
+        week_number: cn('text-[0.8rem] select-none text-muted-foreground'),
+        day: cn('relative w-full h-full p-0 text-center group/day aspect-square select-none'),
+        today: cn('bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none'),
+        outside: cn('text-muted-foreground aria-selected:text-muted-foreground'),
         disabled: cn('text-muted-foreground opacity-50'),
         hidden: cn('invisible'),
         ...classNames,

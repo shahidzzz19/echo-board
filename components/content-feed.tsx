@@ -1,9 +1,12 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import React, { useEffect, useCallback, useMemo } from 'react';
 import useSWRInfinite from 'swr/infinite';
-import { motion } from 'framer-motion';
+import { ContentSkeleton } from './content-skeleton';
+import { DraggableContentCard } from './draggable-content-card';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import { useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll';
 import {
   setItems,
   appendItems,
@@ -11,9 +14,6 @@ import {
   setError,
   ContentItem,
 } from '@/lib/slices/contentSlice';
-import { ContentSkeleton } from './content-skeleton';
-import { DraggableContentCard } from './draggable-content-card';
-import { useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll';
 
 // Generic fetcher
 const fetcher = (url: string) => fetch(url).then((res) => res.json());

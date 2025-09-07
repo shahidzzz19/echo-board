@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
+import { useEffect } from 'react';
+import { ContentCard } from './content-card';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { updateFavoriteItems } from '@/lib/slices/contentSlice';
-import { ContentCard } from './content-card';
 
 export function FavoritesSection() {
   const dispatch = useAppDispatch();

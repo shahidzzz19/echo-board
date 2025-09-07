@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Home, TrendingUp, Heart, Settings, User, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { updatePreferences } from '@/lib/slices/userSlice';
@@ -70,7 +70,11 @@ export function Sidebar({ activeSection, onSectionChange, onOpenPreferences }: S
           className="w-full justify-start text-sm lg:text-base h-9 lg:h-10"
           onClick={toggleTheme}
         >
-          {theme === 'dark' ? <Sun className="mr-2 lg:mr-3 h-4 w-4" /> : <Moon className="mr-2 lg:mr-3 h-4 w-4" />}
+          {theme === 'dark' ? (
+            <Sun className="mr-2 lg:mr-3 h-4 w-4" />
+          ) : (
+            <Moon className="mr-2 lg:mr-3 h-4 w-4" />
+          )}
           <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
         </Button>
 

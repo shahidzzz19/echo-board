@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd';
+import { ContentCard } from './content-card';
 import { useAppDispatch } from '@/lib/hooks';
 import { reorderItems } from '@/lib/slices/contentSlice';
-import { ContentCard } from './content-card';
 import type { ContentItem } from '@/lib/slices/contentSlice';
 
 interface DraggableContentCardProps {

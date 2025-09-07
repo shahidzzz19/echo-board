@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { Heart, ExternalLink, Clock, Tag } from 'lucide-react';
 import Image from 'next/image';
-import clsx from 'clsx';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { toggleFavorite } from '@/lib/slices/userSlice';
 import type { ContentItem } from '@/lib/slices/contentSlice';
-import { Slot } from '@radix-ui/react-slot';
+import { toggleFavorite } from '@/lib/slices/userSlice';
 
 interface ContentCardProps {
   item: ContentItem;
@@ -41,10 +41,14 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'news': return 'bg-blue-500';
-      case 'recommendation': return 'bg-green-500';
-      case 'social': return 'bg-purple-500';
-      default: return 'bg-gray-500';
+      case 'news':
+        return 'bg-blue-500';
+      case 'recommendation':
+        return 'bg-green-500';
+      case 'social':
+        return 'bg-purple-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
@@ -100,9 +104,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
           {/* Type Badge */}
           <div className="absolute top-2 left-2">
-            <Badge className={`${getTypeColor(item.type)} text-white text-xs`}>
-              {item.type}
-            </Badge>
+            <Badge className={`${getTypeColor(item.type)} text-white text-xs`}>{item.type}</Badge>
           </div>
 
           {/* Trending Badge */}
@@ -137,9 +139,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
 
         {/* Footer: Source + Actions */}
         <CardFooter className="pt-2 px-3 sm:px-6 flex items-center justify-between">
-          <div className="text-xs text-muted-foreground truncate flex-1 mr-2">
-            {item.source}
-          </div>
+          <div className="text-xs text-muted-foreground truncate flex-1 mr-2">{item.source}</div>
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {/* Favorite Button */}
             <Button
@@ -153,7 +153,13 @@ export function ContentCard({ item, className }: ContentCardProps) {
             </Button>
 
             {/* External Link Button */}
-            <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0" aria-label="Open article">
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="h-8 w-8 p-0"
+              aria-label="Open article"
+            >
               <Slot>
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
