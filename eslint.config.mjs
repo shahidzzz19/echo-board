@@ -6,18 +6,19 @@ import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import importPlugin from "eslint-plugin-import";
 import prettierPlugin from "eslint-plugin-prettier";
+import nextPlugin from "@next/eslint-plugin-next";
 
 export default [
   {
-    ignores: ["node_modules", ".next", "dist"],
+    ignores: ["node_modules/**", ".next/**", "dist/**"],
 
     languageOptions: {
-      parser: tsParser, // MUST import parser module
+      parser: tsParser,
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
         ecmaFeatures: { jsx: true },
-        project: "./tsconfig.json",
+        project: ["./tsconfig.json"], // only TypeScript files included
       },
       globals: {
         window: "readonly",
@@ -37,6 +38,7 @@ export default [
       "jsx-a11y": jsxA11yPlugin,
       import: importPlugin,
       prettier: prettierPlugin,
+      "@next/next": nextPlugin,
     },
 
     rules: {
@@ -55,10 +57,13 @@ export default [
           trailingComma: "all",
         },
       ],
+      "@next/next/no-html-link-for-pages": ["error", "app"], // enforce Next.js linking rules
     },
 
     settings: {
       react: { version: "detect" },
     },
+
+    files: ["**/*.{ts,tsx,js,jsx}"], // only lint these files
   },
 ];
